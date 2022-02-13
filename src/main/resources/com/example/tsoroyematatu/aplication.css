@@ -1,0 +1,24 @@
+#root {
+    -fxbackground-color: #000;
+}
+
+#welcomeText {
+    -fx-font-size: 18;
+    -fx-text-fill: gray;
+}
+
+#titleText {
+    -fx-font-size: 28;
+    -fx-text-fill: darkslategray;
+}
+
+#buttonMain {
+    -fx-background-color: dimgray;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+#backContainer {
+    -fx-background-color: white;
+    -fx-cursor: hand;
+}
