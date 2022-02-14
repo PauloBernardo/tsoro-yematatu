@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@aplication.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tsoroyematatu.MenuView">
+   <children>
+      <Pane fx:id="backContainer" layoutX="10.0" layoutY="16.0" prefHeight="30.0" prefWidth="77.0">
+         <children>
+            <Polygon fill="#b3bfc9" layoutX="68.0" layoutY="66.0" points="-57.0, -46.0, -47.0, -38.0, -47.0, -57.0" stroke="BLACK" strokeType="INSIDE" />
+            <Label layoutX="31.0" layoutY="11.0" onMouseClicked="#switchToConnectServer" text="Back" />
+         </children>
+      </Pane>
+      <Label fx:id="titleText" alignment="CENTER" layoutX="215.0" layoutY="24.0" text="Tsoro Yematatu" textAlignment="CENTER" textFill="#5a4eae">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label layoutX="24.0" layoutY="380.0" text="Server connection:" />
+      <Label fx:id="connectionStatus" layoutX="154.0" layoutY="380.0" />
+      <Button layoutX="255.0" layoutY="194.0" mnemonicParsing="false" onAction="#onButtonNewClick" text="New Match" />
+      <Button layoutX="245.0" layoutY="238.0" mnemonicParsing="false" text="Choose Match" />
+      <Button layoutX="242.0" layoutY="283.0" mnemonicParsing="false" onAction="#onButtonRandomClick" text="Random Match" />
+      <HBox alignment="CENTER" layoutY="72.0" prefHeight="50.0" prefWidth="600.0">
+         <children>
+            <Label text="Player: " />
+            <Label fx:id="nameText" alignment="CENTER" contentDisplay="CENTER" />
+         </children>
+      </HBox>
+   </children>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+</AnchorPane>

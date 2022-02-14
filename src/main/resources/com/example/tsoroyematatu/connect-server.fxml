@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@aplication.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tsoroyematatu.ConnectServer">
+<AnchorPane fx:id="anchorPane" prefHeight="400.0" prefWidth="600.0" stylesheets="@aplication.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tsoroyematatu.ConnectServer">
    <children>
       <Label fx:id="titleText" alignment="CENTER" layoutX="205.0" layoutY="14.0" text="Tsoro Yematatu" textAlignment="CENTER" textFill="#5a4eae">
          <font>
@@ -27,6 +27,5 @@
       <Label layoutX="137.0" layoutY="160.0" text="Name:" />
       <TextField fx:id="nameField" layoutX="189.0" layoutY="156.0" prefHeight="24.0" prefWidth="272.0" />
       <Button fx:id="nextButton" layoutX="276.0" layoutY="253.0" mnemonicParsing="false" onAction="#onNextClick" text="Next" />
-      <Button layoutX="270.0" layoutY="284.0" mnemonicParsing="false" onAction="#onCheckClick" text="Button" />
    </children>
 </AnchorPane>

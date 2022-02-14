@@ -1,0 +1,77 @@
+#root {
+    -fxbackground-color: #000;
+}
+
+.colorBalls {
+    -fx-cursor: hand;
+    -fx-opacity: 70%;
+}
+
+.colorBalls:hover {
+    -fx-opacity: 100%;
+}
+
+.colorBallsBlocked {
+    -fx-cursor: none;
+    -fx-opacity: 20%;
+}
+
+.colorBallsBlocked:hover {
+    -fx-opacity: 20%;
+}
+
+
+.playerBalls {
+    -fx-cursor: hand;
+    -fx-opacity: 70%;
+    -fx-fill: dimgray;
+}
+
+.playerBalls:hover {
+    -fx-opacity: 100%;
+}
+
+.playerBallsSelected {
+    -fx-fill: greenyellow;
+    -fx-opacity: 100%;
+}
+
+.playerBallsSelected:hover {
+    -fx-opacity: 20%;
+}
+
+
+.gameBalls {
+    -fx-cursor: hand;
+    -fx-opacity: 100%;
+}
+
+.gameBalls:hover {
+    -fx-opacity: 70%;
+}
+
+.gameBallsSelected {
+    -fx-opacity: 50%;
+    -fx-stroke: darkslategray;
+    -fx-stroke-width: 5px;
+    -fx-cursor: hand;
+}
+
+.gameBallsSelected:hover {
+    -fx-opacity: 70%;
+}
+
+.gameBallsDisabled {
+    -fx-cursor: null;
+    -fx-opacity: 30%;
+}
+
+.gameBallsDisabled:hover {
+    -fx-cursor: null;
+    -fx-opacity: 30%;
+}
+
+.emptyBoardBall {
+    -fx-cursor: hand;
+    -fx-fill: darkgrey;
+}
