@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
 
@@ -61,9 +62,12 @@
             <Label fx:id="nameText" alignment="CENTER" contentDisplay="CENTER" />
          </children>
       </HBox>
-      <ScrollPane layoutX="729.0" layoutY="65.0" prefHeight="444.0" prefWidth="328.0" />
-      <TextField layoutX="729.0" layoutY="520.0" prefHeight="24.0" prefWidth="254.0" promptText="Your message..." />
-      <Button layoutX="989.0" layoutY="520.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="70.0" text="Send" />
+      <ScrollPane hbarPolicy="NEVER" layoutX="729.0" layoutY="65.0" prefHeight="444.0" prefWidth="328.0">
+         <content>
+            <VBox fx:id="messageBox" />
+         </content></ScrollPane>
+      <TextField fx:id="messageField" layoutX="729.0" layoutY="520.0" prefHeight="24.0" prefWidth="254.0" promptText="Your message..." />
+      <Button fx:id="sendButton" layoutX="989.0" layoutY="520.0" mnemonicParsing="false" onAction="#chatMessageSend" prefHeight="24.0" prefWidth="70.0" text="Send" />
       <Label layoutX="729.0" layoutY="47.0" text="Messaging Box" />
       <Label layoutX="-22.0" layoutY="-40.0" text="Label" />
       <Pane fx:id="choosePlayer" layoutX="561.0" layoutY="-240.0" opacity="0.0" prefHeight="200.0" prefWidth="463.0">

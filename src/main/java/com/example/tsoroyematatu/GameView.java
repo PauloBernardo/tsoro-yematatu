@@ -1,20 +1,23 @@
 package com.example.tsoroyematatu;
 
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -66,6 +69,12 @@ public class GameView implements ContextListening {
     public Pane anotherBallsPanel1;
     @FXML
     public AnchorPane anchorPane;
+    @FXML
+    public TextField messageField;
+    @FXML
+    public Button sendButton;
+    @FXML
+    public VBox messageBox;
 
     private int playerBall1Position = -1;
     private int playerBall2Position = -1;
@@ -147,13 +156,13 @@ public class GameView implements ContextListening {
     }
 
     @FXML
-    public void switchToConnectServer(MouseEvent event) throws IOException {
-        Context.getInstance().removeListening(this);
-        Parent rootMain = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("menu-view.fxml")));
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        scene = new Scene(rootMain);
-        stage.setScene(scene);
-        stage.show();
+    public void switchToConnectServer(ActionEvent event) throws IOException {
+        PrintStream saida = new PrintStream(client.getOutputStream());
+        if (this.actualPlayTurn != null) {
+            saida.println("endGame:" + ((Circle)event.getSource()).getId());
+        } else {
+            saida.println("cancelGame:");
+        }
     }
 
     @FXML
@@ -326,6 +335,66 @@ public class GameView implements ContextListening {
         }
     }
 
+
+    @FXML
+    public void chatMessageSend(ActionEvent event) throws IOException {
+        //Creating a Label
+        Label label = new Label(this.nameText.getText());
+        //Setting font to the label
+        label.getStyleClass().add("namePlayerLabel");
+        label.setLayoutX(100);
+        label.setLayoutY(100);
+        messageBox.getChildren().add(label);
+
+        //Creating a Label
+        Label label1 = new Label(messageField.getText());
+        label1.getStyleClass().add("messagePlayerLabel");
+        //Setting the position
+        label1.setLayoutX(100);
+        label1.setLayoutY(100);
+        messageBox.getChildren().add(label1);
+        messageBox.getChildren().add(new Label("\n"));
+
+
+        PrintStream saida = new PrintStream(client.getOutputStream());
+        saida.println("chatMessage:" + messageField.getText());
+        messageField.clear();
+    }
+
+    @FXML
+    private void goToMenu() throws IOException {
+        Context.getInstance().removeListening(this);
+        FXMLLoader fxmlLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("menu-view.fxml")));
+        Parent rootMain = (Parent)fxmlLoader.load();
+        stage = (Stage)anchorPane.getScene().getWindow();
+        scene = new Scene(rootMain);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    @FXML
+    private void translateTransitionBall(Circle circle, double x, double y) {
+        TranslateTransition translateTransition = new TranslateTransition();
+
+        //Setting the duration of the transition
+        translateTransition.setDuration(Duration.millis(1000));
+
+        //Setting the node for the transition
+        translateTransition.setNode(circle);
+
+        //Setting the value of the transition along the x axis.
+        translateTransition.setToX(x);
+        translateTransition.setToY(y);
+        translateTransition.setFromX(0);
+        translateTransition.setFromY(0);
+
+        //Setting auto reverse value to false
+        translateTransition.setAutoReverse(false);
+
+        //Playing the animation
+        translateTransition.play();
+    }
+
     @FXML
     public void handleResponse(String message) throws IOException {
         if (message.startsWith("getName:OK")) {
@@ -420,9 +489,12 @@ public class GameView implements ContextListening {
             this.actualPlayTurn = message.substring(8);
             turnLabel.setText(message.substring(8));
             if (this.actualPlayTurn.equals(this.playerTurn)) {
-                playerBall1.getStyleClass().remove("gameBallsDisabled");
-                playerBall2.getStyleClass().remove("gameBallsDisabled");
-                playerBall3.getStyleClass().remove("gameBallsDisabled");
+                if (playerBall1.getParent() != gamePanel || (playerBall2.getParent() == gamePanel && playerBall3.getParent() == gamePanel))
+                    playerBall1.getStyleClass().remove("gameBallsDisabled");
+                if (playerBall2.getParent() != gamePanel || (playerBall1.getParent() == gamePanel && playerBall3.getParent() == gamePanel))
+                    playerBall2.getStyleClass().remove("gameBallsDisabled");
+                if (playerBall3.getParent() != gamePanel || (playerBall1.getParent() == gamePanel && playerBall2.getParent() == gamePanel))
+                    playerBall3.getStyleClass().remove("gameBallsDisabled");
             } else {
                 playerBall1.getStyleClass().add("gameBallsDisabled");
                 playerBall2.getStyleClass().add("gameBallsDisabled");
@@ -457,32 +529,25 @@ public class GameView implements ContextListening {
 
                 switch (newer) {
                     case 0:
-                        selectedPlayerBall.setLayoutX(gameBall0.getLayoutX());
-                        selectedPlayerBall.setLayoutY(gameBall0.getLayoutY());
+                        translateTransitionBall(selectedPlayerBall, gameBall0.getLayoutX(), gameBall0.getLayoutY());
                         break;
                     case 1:
-                        selectedPlayerBall.setLayoutX(gameBall1.getLayoutX());
-                        selectedPlayerBall.setLayoutY(gameBall1.getLayoutY());
+                        translateTransitionBall(selectedPlayerBall, gameBall1.getLayoutX(), gameBall1.getLayoutY());
                         break;
                     case 2:
-                        selectedPlayerBall.setLayoutX(gameBall2.getLayoutX());
-                        selectedPlayerBall.setLayoutY(gameBall2.getLayoutY());
+                        translateTransitionBall(selectedPlayerBall, gameBall2.getLayoutX(), gameBall2.getLayoutY());
                         break;
                     case 3:
-                        selectedPlayerBall.setLayoutX(gameBall3.getLayoutX());
-                        selectedPlayerBall.setLayoutY(gameBall3.getLayoutY());
+                        translateTransitionBall(selectedPlayerBall, gameBall3.getLayoutX(), gameBall3.getLayoutY());
                         break;
                     case 4:
-                        selectedPlayerBall.setLayoutX(gameBall4.getLayoutX());
-                        selectedPlayerBall.setLayoutY(gameBall4.getLayoutY());
+                        translateTransitionBall(selectedPlayerBall, gameBall4.getLayoutX(), gameBall4.getLayoutY());
                         break;
                     case 5:
-                        selectedPlayerBall.setLayoutX(gameBall5.getLayoutX());
-                        selectedPlayerBall.setLayoutY(gameBall5.getLayoutY());
+                        translateTransitionBall(selectedPlayerBall, gameBall5.getLayoutX(), gameBall5.getLayoutY());
                         break;
                     case 6:
-                        selectedPlayerBall.setLayoutX(gameBall6.getLayoutX());
-                        selectedPlayerBall.setLayoutY(gameBall6.getLayoutY());
+                        translateTransitionBall(selectedPlayerBall, gameBall6.getLayoutX(), gameBall6.getLayoutY());
                         break;
                 }
 
@@ -558,20 +623,57 @@ public class GameView implements ContextListening {
             alert.setContentText(message.substring(11));
             alert.show();
         }
+
+        if (message.startsWith("cancelGame:OK")) {
+            this.goToMenu();
+        }
+
         if (message.startsWith("endGame:OK")) {
+            if (message.equals("endGame:OK,giveUp")) {
+                this.goToMenu();
+            }
+
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("END GAME");
             alert.setContentText(message.substring(11).toUpperCase());
             Optional<ButtonType> result = alert.showAndWait();
             if(result.isEmpty() || result.get() == ButtonType.OK) {
-                Context.getInstance().removeListening(this);
-                FXMLLoader fxmlLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("menu-view.fxml")));
-                Parent rootMain = (Parent)fxmlLoader.load();
-                stage = (Stage)anchorPane.getScene().getWindow();
-                scene = new Scene(rootMain);
-                stage.setScene(scene);
-                stage.show();
+                this.goToMenu();
             }
+        }
+
+        if (message.startsWith("chatMessage:OK")) {
+            String player = message.split(":")[1].split(",")[1];
+            String remoteMessage = message.split(":")[1].split(",")[2];
+
+            HBox hBox = new HBox();
+            hBox.setMinWidth(320);
+            hBox.setMaxWidth(320);
+            //Creating a Label
+            Label label = new Label(player);
+            hBox.setAlignment(Pos.CENTER_RIGHT);
+            //Setting font to the label
+            label.getStyleClass().add("namePlayerLabel");
+            label.setLayoutX(500);
+            label.setLayoutY(100);
+            hBox.getChildren().add(label);
+            messageBox.getChildren().add(hBox);
+
+
+            HBox hBox1 = new HBox();
+            hBox1.setMinWidth(320);
+            hBox1.setMaxWidth(320);
+            //Creating a Label
+            Label label1 = new Label(remoteMessage);
+            label1.getStyleClass().add("messageAnotherLabel");
+            //Setting the position
+            label1.setLayoutX(500);
+            label1.setLayoutY(100);
+            hBox1.getChildren().add(label1);
+            hBox1.setAlignment(Pos.CENTER_RIGHT);
+            messageBox.getChildren().add(hBox1);
+            messageBox.getChildren().add(new Label("\n"));
+            messageField.clear();
         }
     }
 

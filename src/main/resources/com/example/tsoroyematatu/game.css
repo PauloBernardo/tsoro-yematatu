@@ -75,3 +75,18 @@
     -fx-cursor: hand;
     -fx-fill: darkgrey;
 }
+
+.namePlayerLabel {
+    -fx-font-size: 10px;
+    -fx-text-fill: gray;
+}
+
+.messagePlayerLabel {
+    -fx-font-size: 14px;
+    -fx-text-fill: green;
+}
+
+.messageAnotherLabel {
+    -fx-font-size: 14px;
+    -fx-text-fill: red;
+}
