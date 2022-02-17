@@ -4,28 +4,44 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Polygon?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane fx:id="anchorPane" prefHeight="400.0" prefWidth="600.0" stylesheets="@aplication.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tsoroyematatu.ConnectServer">
+<AnchorPane fx:id="anchorPane" stylesheets="@aplication.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tsoroyematatu.ConnectServer">
    <children>
-      <Label fx:id="titleText" alignment="CENTER" layoutX="205.0" layoutY="14.0" text="Tsoro Yematatu" textAlignment="CENTER" textFill="#5a4eae">
-         <font>
-            <Font size="24.0" />
-         </font>
-      </Label>
-      <Label layoutX="14.0" layoutY="370.0" text="Server connection:" />
-      <Label fx:id="connectionStatus" layoutX="144.0" layoutY="370.0" />
       <Pane fx:id="backContainer" layoutY="6.0" prefHeight="30.0" prefWidth="77.0">
          <children>
             <Polygon fill="#b3bfc9" layoutX="68.0" layoutY="66.0" points="-57.0, -46.0, -47.0, -38.0, -47.0, -57.0" stroke="BLACK" strokeType="INSIDE" />
             <Label layoutX="31.0" layoutY="11.0" onMouseClicked="#switchToConnectServer" text="Back" />
          </children>
       </Pane>
-      <Label layoutX="137.0" layoutY="160.0" text="Name:" />
-      <TextField fx:id="nameField" layoutX="189.0" layoutY="156.0" prefHeight="24.0" prefWidth="272.0" />
-      <Button fx:id="nextButton" layoutX="276.0" layoutY="253.0" mnemonicParsing="false" onAction="#onNextClick" text="Next" />
+      <HBox alignment="CENTER" layoutX="5.0" layoutY="110.0" prefHeight="196.0" prefWidth="591.0" AnchorPane.bottomAnchor="110.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="110.0">
+         <children>
+            <Pane prefHeight="196.0" prefWidth="420.0">
+               <children>
+                  <Button fx:id="nextButton" layoutX="185.0" layoutY="115.0" mnemonicParsing="false" onAction="#onNextClick" text="Next" />
+                  <TextField fx:id="nameField" layoutX="88.0" layoutY="57.0" prefHeight="24.0" prefWidth="272.0" />
+                  <Label layoutX="36.0" layoutY="61.0" text="Name:" />
+               </children>
+            </Pane>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" layoutX="14.0" layoutY="6.0" prefHeight="50.0" prefWidth="449.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label fx:id="titleText" alignment="CENTER" text="Tsoro Yematatu" textAlignment="CENTER" textFill="#5a4eae">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <HBox layoutX="14.0" layoutY="286.0" prefHeight="20.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <Label text=" Server connection: " />
+            <Label fx:id="connectionStatus" />
+         </children>
+      </HBox>
    </children>
 </AnchorPane>
