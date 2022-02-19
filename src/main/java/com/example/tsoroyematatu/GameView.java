@@ -383,13 +383,8 @@ public class GameView implements ContextListening {
         translateTransition.setNode(circle);
 
         //Setting the value of the transition along the x axis.
-        translateTransition.setToX(x);
-        translateTransition.setToY(y);
-        translateTransition.setFromX(0);
-        translateTransition.setFromY(0);
-
-        //Setting auto reverse value to false
-        translateTransition.setAutoReverse(false);
+        translateTransition.setToX(x - circle.getLayoutX());
+        translateTransition.setToY(y - circle.getLayoutY());
 
         //Playing the animation
         translateTransition.play();
@@ -479,10 +474,26 @@ public class GameView implements ContextListening {
             gamePanel.setLayoutX(20);
             gamePanel.setLayoutY(20);
             gamePanel.setOpacity(1);
-            board.getChildren().add(playerBallsPanel);
-            playerBallsPanel.setLayoutX(550);
-            playerBallsPanel.setLayoutY(20);
-            playerBallsPanel.setOpacity(1);
+            gamePanel.getChildren().add(playerBall1);
+            gamePanel.getChildren().add(playerBall2);
+            gamePanel.getChildren().add(playerBall3);
+            playerBall1.setLayoutX(550);
+            playerBall1.setLayoutY(20);
+            playerBall2.setLayoutX(550);
+            playerBall2.setLayoutY(80);
+            playerBall3.setLayoutX(550);
+            playerBall3.setLayoutY(140);
+
+            gamePanel.getChildren().add(anotherBall1);
+            gamePanel.getChildren().add(anotherBall2);
+            gamePanel.getChildren().add(anotherBall3);
+            anotherBall1.setLayoutX(550);
+            anotherBall1.setLayoutY(20);
+            anotherBall2.setLayoutX(550);
+            anotherBall2.setLayoutY(80);
+            anotherBall3.setLayoutX(550);
+            anotherBall3.setLayoutY(140);
+
             loadingLabel.setText("");
         }
         if (message.startsWith("turn:OK")) {
@@ -509,11 +520,6 @@ public class GameView implements ContextListening {
                 selectedPlayerBall.getStyleClass().remove("gameBallsSelected");
                 selectedPlayerBall.getStyleClass().add("gameBalls");
                 removeActiveBalls();
-
-                if (older == -1) {
-                    playerBallsPanel.getChildren().remove(selectedPlayerBall);
-                    gamePanel.getChildren().add(selectedPlayerBall);
-                }
 
                 if (selectedPlayerBall == playerBall1) {
                     playerBall1Position = newer;
@@ -568,8 +574,6 @@ public class GameView implements ContextListening {
                         selected = anotherBall3;
                         anotherBall3Position = newer;
                     }
-                    anotherBallsPanel1.getChildren().remove(selected);
-                    gamePanel.getChildren().add(selected);
                 } else {
                     if (older == anotherBall1Position) {
                         selected = anotherBall1;
@@ -587,32 +591,25 @@ public class GameView implements ContextListening {
 
                 switch (newer) {
                     case 0:
-                        selected.setLayoutX(gameBall0.getLayoutX());
-                        selected.setLayoutY(gameBall0.getLayoutY());
+                        translateTransitionBall(selected, gameBall0.getLayoutX(), gameBall0.getLayoutY());
                         break;
                     case 1:
-                        selected.setLayoutX(gameBall1.getLayoutX());
-                        selected.setLayoutY(gameBall1.getLayoutY());
+                        translateTransitionBall(selected, gameBall1.getLayoutX(), gameBall1.getLayoutY());
                         break;
                     case 2:
-                        selected.setLayoutX(gameBall2.getLayoutX());
-                        selected.setLayoutY(gameBall2.getLayoutY());
+                        translateTransitionBall(selected, gameBall2.getLayoutX(), gameBall2.getLayoutY());
                         break;
                     case 3:
-                        selected.setLayoutX(gameBall3.getLayoutX());
-                        selected.setLayoutY(gameBall3.getLayoutY());
+                        translateTransitionBall(selected, gameBall3.getLayoutX(), gameBall3.getLayoutY());
                         break;
                     case 4:
-                        selected.setLayoutX(gameBall4.getLayoutX());
-                        selected.setLayoutY(gameBall4.getLayoutY());
+                        translateTransitionBall(selected, gameBall4.getLayoutX(), gameBall4.getLayoutY());
                         break;
                     case 5:
-                        selected.setLayoutX(gameBall5.getLayoutX());
-                        selected.setLayoutY(gameBall5.getLayoutY());
+                        translateTransitionBall(selected, gameBall5.getLayoutX(), gameBall5.getLayoutY());
                         break;
                     case 6:
-                        selected.setLayoutX(gameBall6.getLayoutX());
-                        selected.setLayoutY(gameBall6.getLayoutY());
+                        translateTransitionBall(selected, gameBall6.getLayoutX(), gameBall6.getLayoutY());
                         break;
                 }
             }
