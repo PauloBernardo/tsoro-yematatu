@@ -124,6 +124,9 @@ public class GameView implements ContextListening {
     private PrintStream output = null;
     private boolean ignoreClick = false;
 
+    private double previousPositionX;
+    private double previousPositionY;
+
     @FXML
     public void initialize() {
         initClient();
@@ -168,6 +171,33 @@ public class GameView implements ContextListening {
     }
 
     @FXML
+    public void handleBallDragStarted(Circle circle) {
+        if (circle.getStyleClass().toString().equals("gameBalls")) {
+            if (playerBall1.getStyleClass().toString().equals("gameBallsSelected")) {
+                playerBall1.getStyleClass().remove("gameBallsSelected");
+                playerBall1.getStyleClass().add("gameBalls");
+            }
+            if (playerBall2.getStyleClass().toString().equals("gameBallsSelected")) {
+                playerBall2.getStyleClass().remove("gameBallsSelected");
+                playerBall2.getStyleClass().add("gameBalls");
+            }
+            if (playerBall3.getStyleClass().toString().equals("gameBallsSelected")) {
+                playerBall3.getStyleClass().remove("gameBallsSelected");
+                playerBall3.getStyleClass().add("gameBalls");
+            }
+            circle.getStyleClass().remove("gameBalls");
+            circle.getStyleClass().add("gameBallsSelected");
+            activeBoardBalls();
+            this.selectedPlayerBall = circle;
+        } else {
+            circle.getStyleClass().remove("gameBallsSelected");
+            circle.getStyleClass().add("gameBalls");
+            removeActiveBalls();
+            this.selectedPlayerBall = null;
+        }
+    }
+
+    @FXML
     public void handleBallDragDropped(Circle node, double startX, double startY) {
         if (node.getStyleClass().toString().contains("gameBallsDisabled")) {
             node.setTranslateX(startX);
@@ -178,23 +208,30 @@ public class GameView implements ContextListening {
         double posY = node.getLayoutY() + node.getTranslateY();
 
         int playerPosition = getPlayerBallPosition(node);
+        if (playerPosition != -1 && (playerBall1Position == -1 || playerBall2Position == -1 || playerBall3Position == -1)) {
+            node.setTranslateX(startX);
+            node.setTranslateY(startY);
+            return;
+        }
 
         this.selectedPlayerBall = node;
         this.ignoreClick = true;
+        this.previousPositionX = startX;
+        this.previousPositionY = startY;
 
-        if (Math.abs(posX - gameBall0.getLayoutX()) < 20 && Math.abs(posY - gameBall0.getLayoutY()) < 20) {
+        if (Math.abs(posX - gameBall0.getLayoutX()) < 20 && Math.abs(posY - gameBall0.getLayoutY()) < 20 && playerPosition != 0) {
             output.println("move:" + playerPosition + "," + gameBall0.getId().substring(8));
-        } else if (Math.abs(posX - gameBall1.getLayoutX()) < 20 && Math.abs(posY - gameBall1.getLayoutY()) < 20) {
+        } else if (Math.abs(posX - gameBall1.getLayoutX()) < 20 && Math.abs(posY - gameBall1.getLayoutY()) < 20 && playerPosition != 1) {
             output.println("move:" + playerPosition + "," + gameBall1.getId().substring(8));
-        } else if (Math.abs(posX - gameBall2.getLayoutX()) < 20 && Math.abs(posY - gameBall2.getLayoutY()) < 20) {
+        } else if (Math.abs(posX - gameBall2.getLayoutX()) < 20 && Math.abs(posY - gameBall2.getLayoutY()) < 20 && playerPosition != 2) {
             output.println("move:" + playerPosition + "," + gameBall2.getId().substring(8));
-        } else if (Math.abs(posX - gameBall3.getLayoutX()) < 20 && Math.abs(posY - gameBall3.getLayoutY()) < 20) {
+        } else if (Math.abs(posX - gameBall3.getLayoutX()) < 20 && Math.abs(posY - gameBall3.getLayoutY()) < 20 && playerPosition != 3) {
             output.println("move:" + playerPosition + "," + gameBall3.getId().substring(8));
-        } else if (Math.abs(posX - gameBall4.getLayoutX()) < 20 && Math.abs(posY - gameBall4.getLayoutY()) < 20) {
+        } else if (Math.abs(posX - gameBall4.getLayoutX()) < 20 && Math.abs(posY - gameBall4.getLayoutY()) < 20 && playerPosition != 4) {
             output.println("move:" + playerPosition + "," + gameBall4.getId().substring(8));
-        } else if (Math.abs(posX - gameBall5.getLayoutX()) < 20 && Math.abs(posY - gameBall5.getLayoutY()) < 20) {
+        } else if (Math.abs(posX - gameBall5.getLayoutX()) < 20 && Math.abs(posY - gameBall5.getLayoutY()) < 20 && playerPosition != 5) {
             output.println("move:" + playerPosition + "," + gameBall5.getId().substring(8));
-        } else if (Math.abs(posX - gameBall6.getLayoutX()) < 20 && Math.abs(posY - gameBall6.getLayoutY()) < 20) {
+        } else if (Math.abs(posX - gameBall6.getLayoutX()) < 20 && Math.abs(posY - gameBall6.getLayoutY()) < 20 && playerPosition != 6) {
             output.println("move:" + playerPosition + "," + gameBall6.getId().substring(8));
         }
         else {
@@ -678,6 +715,8 @@ public class GameView implements ContextListening {
         }
         if (message.startsWith("move:ERROR")) {
             this.ignoreClick = false;
+            this.selectedPlayerBall.setTranslateX(previousPositionX);
+            this.selectedPlayerBall.setTranslateY(previousPositionY);
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Choose Player");
             alert.setContentText(message.substring(11));

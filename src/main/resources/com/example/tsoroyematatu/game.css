@@ -86,6 +86,11 @@
     -fx-text-fill: green;
 }
 
+.anotherGameBalls {
+    -fx-cursor: DISAPPEAR;
+    -fx-opacity: 40%;
+}
+
 .messageAnotherLabel {
     -fx-font-size: 14px;
     -fx-text-fill: red;

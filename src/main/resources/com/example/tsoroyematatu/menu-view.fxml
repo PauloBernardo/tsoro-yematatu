@@ -25,7 +25,7 @@
       <Label layoutX="24.0" layoutY="380.0" text="Server connection:" />
       <Label fx:id="connectionStatus" layoutX="154.0" layoutY="380.0" />
       <Button layoutX="255.0" layoutY="194.0" mnemonicParsing="false" onAction="#onButtonNewClick" text="New Match" />
-      <Button layoutX="245.0" layoutY="238.0" mnemonicParsing="false" text="Choose Match" />
+      <Button layoutX="245.0" layoutY="238.0" mnemonicParsing="false" onAction="#onButtonChooseClick" text="Choose Match" />
       <Button layoutX="242.0" layoutY="283.0" mnemonicParsing="false" onAction="#onButtonRandomClick" text="Random Match" />
       <HBox alignment="CENTER" layoutY="72.0" prefHeight="50.0" prefWidth="600.0">
          <children>

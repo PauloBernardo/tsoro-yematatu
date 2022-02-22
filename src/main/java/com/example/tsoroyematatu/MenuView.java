@@ -80,6 +80,16 @@ public class MenuView implements ContextListening {
         this.onButtonClick(event, "new");
     }
 
+    @FXML
+    public void onButtonChooseClick(ActionEvent event) throws IOException {
+        Context.getInstance().removeListening(this);
+        FXMLLoader fxmlLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("chooseGame.fxml")));
+        Parent rootMain = fxmlLoader.load();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(rootMain);
+        stage.setScene(scene);
+        stage.show();
+    }
 
     @FXML
     public void handleResponse(String message) {

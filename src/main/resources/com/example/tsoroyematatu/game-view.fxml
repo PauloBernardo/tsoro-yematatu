@@ -111,9 +111,9 @@
       </Pane>
       <Pane fx:id="anotherBallsPanel1" layoutX="-234.0" layoutY="110.0" opacity="0.0" prefHeight="288.0" prefWidth="200.0">
          <children>
-            <Circle fx:id="anotherBall1" fill="WHITE" layoutX="100.0" layoutY="46.0" radius="32.0" stroke="BLACK" strokeType="INSIDE" />
-            <Circle fx:id="anotherBall2" fill="WHITE" layoutX="100.0" layoutY="131.0" radius="32.0" stroke="BLACK" strokeType="INSIDE" />
-            <Circle fx:id="anotherBall3" fill="WHITE" layoutX="100.0" layoutY="216.0" radius="32.0" stroke="BLACK" strokeType="INSIDE" />
+            <Circle styleClass="anotherGameBalls" fx:id="anotherBall1" fill="WHITE" layoutX="100.0" layoutY="46.0" radius="32.0" stroke="BLACK" strokeType="INSIDE" />
+            <Circle styleClass="anotherGameBalls" fx:id="anotherBall2" fill="WHITE" layoutX="100.0" layoutY="131.0" radius="32.0" stroke="BLACK" strokeType="INSIDE" />
+            <Circle styleClass="anotherGameBalls" fx:id="anotherBall3" fill="WHITE" layoutX="100.0" layoutY="216.0" radius="32.0" stroke="BLACK" strokeType="INSIDE" />
          </children>
       </Pane>
       <Button fx:id="buttonDraw" layoutX="845.0" layoutY="15.0" mnemonicParsing="false" onAction="#askDraw" prefHeight="32.0" prefWidth="97.0" text="Draw" />
