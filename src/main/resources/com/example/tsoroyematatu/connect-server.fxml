@@ -11,12 +11,6 @@
 
 <AnchorPane fx:id="anchorPane" stylesheets="@aplication.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tsoroyematatu.ConnectServer">
    <children>
-      <Pane fx:id="backContainer" layoutY="6.0" prefHeight="30.0" prefWidth="77.0">
-         <children>
-            <Polygon fill="#b3bfc9" layoutX="68.0" layoutY="66.0" points="-57.0, -46.0, -47.0, -38.0, -47.0, -57.0" stroke="BLACK" strokeType="INSIDE" />
-            <Label layoutX="31.0" layoutY="11.0" onMouseClicked="#switchToConnectServer" text="Back" />
-         </children>
-      </Pane>
       <HBox alignment="CENTER" layoutX="5.0" layoutY="110.0" prefHeight="196.0" prefWidth="591.0" AnchorPane.bottomAnchor="110.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="110.0">
          <children>
             <Pane prefHeight="196.0" prefWidth="420.0">
@@ -43,5 +37,11 @@
             <Label fx:id="connectionStatus" />
          </children>
       </HBox>
+      <Pane fx:id="backContainer" layoutY="6.0" onMouseClicked="#switchToConnectServer" prefHeight="30.0" prefWidth="77.0">
+         <children>
+            <Polygon fill="#b3bfc9" layoutX="68.0" layoutY="66.0" points="-57.0, -46.0, -47.0, -38.0, -47.0, -57.0" stroke="BLACK" strokeType="INSIDE" />
+            <Label layoutX="31.0" layoutY="11.0" text="Back" />
+         </children>
+      </Pane>
    </children>
 </AnchorPane>

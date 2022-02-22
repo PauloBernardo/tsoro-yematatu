@@ -119,6 +119,11 @@ public class GameView implements ContextListening {
     private String playerColor;
     private String actualPlayTurn;
 
+    private DraggableMaker draggableMaker = new DraggableMaker(this);
+
+    private PrintStream output = null;
+    private boolean ignoreClick = false;
+
     @FXML
     public void initialize() {
         initClient();
@@ -132,15 +137,14 @@ public class GameView implements ContextListening {
             context.addListening(this);
             connectionStatus.setText("Connection established!");
             Platform.runLater(() -> {
-                PrintStream saida = null;
                 try {
-                    saida = new PrintStream(client.getOutputStream());
+                    output = new PrintStream(client.getOutputStream());
                     if (this.type.equals("new")) {
-                        saida.println("startNewMatch:");
+                        output.println("startNewMatch:");
                     } else if (this.type.equals("random")) {
-                        saida.println("startRandomMatch:");
+                        output.println("startRandomMatch:");
                     }
-                    saida.println("getName:");
+                    output.println("getName:");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -149,6 +153,56 @@ public class GameView implements ContextListening {
         } catch (IOException ex) {
             connectionStatus.setText("Connection not established!");
         }
+    }
+
+    private int getPlayerBallPosition(Circle circle) {
+        switch (circle.getId()) {
+            case "playerBall1":
+                return playerBall1Position;
+            case "playerBall2":
+                return playerBall2Position;
+            case "playerBall3":
+                return playerBall3Position;
+        }
+        return 7;
+    }
+
+    @FXML
+    public void handleBallDragDropped(Circle node, double startX, double startY) {
+        if (node.getStyleClass().toString().contains("gameBallsDisabled")) {
+            node.setTranslateX(startX);
+            node.setTranslateY(startY);
+            return;
+        }
+        double posX = node.getLayoutX() + node.getTranslateX();
+        double posY = node.getLayoutY() + node.getTranslateY();
+
+        int playerPosition = getPlayerBallPosition(node);
+
+        this.selectedPlayerBall = node;
+        this.ignoreClick = true;
+
+        if (Math.abs(posX - gameBall0.getLayoutX()) < 20 && Math.abs(posY - gameBall0.getLayoutY()) < 20) {
+            output.println("move:" + playerPosition + "," + gameBall0.getId().substring(8));
+        } else if (Math.abs(posX - gameBall1.getLayoutX()) < 20 && Math.abs(posY - gameBall1.getLayoutY()) < 20) {
+            output.println("move:" + playerPosition + "," + gameBall1.getId().substring(8));
+        } else if (Math.abs(posX - gameBall2.getLayoutX()) < 20 && Math.abs(posY - gameBall2.getLayoutY()) < 20) {
+            output.println("move:" + playerPosition + "," + gameBall2.getId().substring(8));
+        } else if (Math.abs(posX - gameBall3.getLayoutX()) < 20 && Math.abs(posY - gameBall3.getLayoutY()) < 20) {
+            output.println("move:" + playerPosition + "," + gameBall3.getId().substring(8));
+        } else if (Math.abs(posX - gameBall4.getLayoutX()) < 20 && Math.abs(posY - gameBall4.getLayoutY()) < 20) {
+            output.println("move:" + playerPosition + "," + gameBall4.getId().substring(8));
+        } else if (Math.abs(posX - gameBall5.getLayoutX()) < 20 && Math.abs(posY - gameBall5.getLayoutY()) < 20) {
+            output.println("move:" + playerPosition + "," + gameBall5.getId().substring(8));
+        } else if (Math.abs(posX - gameBall6.getLayoutX()) < 20 && Math.abs(posY - gameBall6.getLayoutY()) < 20) {
+            output.println("move:" + playerPosition + "," + gameBall6.getId().substring(8));
+        }
+        else {
+            node.setTranslateX(startX);
+            node.setTranslateY(startY);
+            return;
+        }
+
     }
 
     public void setType(String type) {
@@ -197,7 +251,8 @@ public class GameView implements ContextListening {
         }
     }
 
-    public void selectBoardBall(MouseEvent event) throws IOException {
+    @FXML
+    public void selectBoardBall(MouseEvent event) {
         Circle circle = ((Circle)event.getSource());
         if (circle.getStyleClass().toString().equals("gameBalls")) {
             if (playerBall1.getStyleClass().toString().equals("gameBallsSelected")) {
@@ -247,17 +302,18 @@ public class GameView implements ContextListening {
 
     @FXML
     public void removeActiveBalls() {
-        gameBall0.getStyleClass().remove("emptyBoardBall");
-        gameBall1.getStyleClass().remove("emptyBoardBall");
-        gameBall2.getStyleClass().remove("emptyBoardBall");
-        gameBall3.getStyleClass().remove("emptyBoardBall");
-        gameBall4.getStyleClass().remove("emptyBoardBall");
-        gameBall5.getStyleClass().remove("emptyBoardBall");
-        gameBall6.getStyleClass().remove("emptyBoardBall");
+        gameBall0.getStyleClass().clear();
+        gameBall1.getStyleClass().clear();
+        gameBall2.getStyleClass().clear();
+        gameBall3.getStyleClass().clear();
+        gameBall4.getStyleClass().clear();
+        gameBall5.getStyleClass().clear();
+        gameBall6.getStyleClass().clear();
     }
 
     @FXML
-    public void selectGameBall(MouseEvent event) throws IOException {
+    public void selectGameBall(MouseEvent event) {
+        if (this.ignoreClick) return;
         Circle circle = ((Circle)event.getSource());
         if (circle.getStyleClass().toString().equals("gameBalls")) {
             if (playerBall1.getStyleClass().toString().equals("gameBallsSelected")) {
@@ -285,21 +341,12 @@ public class GameView implements ContextListening {
     }
 
     @FXML
-    public void handleClickBoardBall(MouseEvent event) throws IOException {
+    public void handleClickBoardBall(MouseEvent event) {
         Circle circle = ((Circle)event.getSource());
-        PrintStream saida = new PrintStream(client.getOutputStream());
-        if (circle.getStyleClass().toString().equals("emptyBoardBall") && selectedPlayerBall != null) {
-            switch (selectedPlayerBall.getId()) {
-                case "playerBall1":
-                    saida.println("move:" + playerBall1Position + "," + circle.getId().substring(8));
-                    break;
-                case "playerBall2":
-                    saida.println("move:" + playerBall2Position + "," + circle.getId().substring(8));
-                    break;
-                case "playerBall3":
-                    saida.println("move:" + playerBall3Position + "," + circle.getId().substring(8));
-                    break;
-            }
+        System.out.println(circle.getStyleClass().toString());
+        System.out.println("Clicked: " + circle.getStyleClass().toString().equals("emptyBoardBall"));
+        if (circle.getStyleClass().toString().contains("emptyBoardBall") && selectedPlayerBall != null) {
+            output.println("move:" + getPlayerBallPosition(selectedPlayerBall) + "," + circle.getId().substring(8));
         }
     }
 
@@ -359,6 +406,12 @@ public class GameView implements ContextListening {
         PrintStream saida = new PrintStream(client.getOutputStream());
         saida.println("chatMessage:" + messageField.getText());
         messageField.clear();
+    }
+
+    @FXML
+    private void askDraw() throws IOException {
+        PrintStream saida = new PrintStream(client.getOutputStream());
+        saida.println("drawGame:YES");
     }
 
     @FXML
@@ -474,31 +527,36 @@ public class GameView implements ContextListening {
             gamePanel.setLayoutX(20);
             gamePanel.setLayoutY(20);
             gamePanel.setOpacity(1);
+            playerBallsPanel.getChildren().remove(playerBall1);
+            playerBallsPanel.getChildren().remove(playerBall2);
+            playerBallsPanel.getChildren().remove(playerBall3);
             gamePanel.getChildren().add(playerBall1);
             gamePanel.getChildren().add(playerBall2);
             gamePanel.getChildren().add(playerBall3);
-            playerBall1.setLayoutX(550);
+            playerBall1.setLayoutX(650);
             playerBall1.setLayoutY(20);
-            playerBall2.setLayoutX(550);
+            playerBall2.setLayoutX(650);
             playerBall2.setLayoutY(80);
-            playerBall3.setLayoutX(550);
+            playerBall3.setLayoutX(650);
             playerBall3.setLayoutY(140);
+            draggableMaker.makeDraggable(playerBall1);
+            draggableMaker.makeDraggable(playerBall2);
+            draggableMaker.makeDraggable(playerBall3);
 
             gamePanel.getChildren().add(anotherBall1);
             gamePanel.getChildren().add(anotherBall2);
             gamePanel.getChildren().add(anotherBall3);
-            anotherBall1.setLayoutX(550);
-            anotherBall1.setLayoutY(20);
-            anotherBall2.setLayoutX(550);
-            anotherBall2.setLayoutY(80);
-            anotherBall3.setLayoutX(550);
-            anotherBall3.setLayoutY(140);
+            anotherBall1.setLayoutX(650);
+            anotherBall1.setLayoutY(260);
+            anotherBall2.setLayoutX(650);
+            anotherBall2.setLayoutY(320);
+            anotherBall3.setLayoutX(650);
+            anotherBall3.setLayoutY(380);
 
             loadingLabel.setText("");
         }
         if (message.startsWith("turn:OK")) {
             this.actualPlayTurn = message.substring(8);
-            turnLabel.setText(message.substring(8));
             if (this.actualPlayTurn.equals(this.playerTurn)) {
                 if (playerBall1.getParent() != gamePanel || (playerBall2.getParent() == gamePanel && playerBall3.getParent() == gamePanel))
                     playerBall1.getStyleClass().remove("gameBallsDisabled");
@@ -506,13 +564,17 @@ public class GameView implements ContextListening {
                     playerBall2.getStyleClass().remove("gameBallsDisabled");
                 if (playerBall3.getParent() != gamePanel || (playerBall1.getParent() == gamePanel && playerBall2.getParent() == gamePanel))
                     playerBall3.getStyleClass().remove("gameBallsDisabled");
+                turnLabel.setText("Your turn");
             } else {
                 playerBall1.getStyleClass().add("gameBallsDisabled");
                 playerBall2.getStyleClass().add("gameBallsDisabled");
                 playerBall3.getStyleClass().add("gameBallsDisabled");
+                turnLabel.setText(message.substring(8));
+                turnLabel.setText("Waiting another player move...");
             }
         }
         if (message.startsWith("move:OK")) {
+            this.ignoreClick = false;
             String playerString = message.split(":")[1].split(",")[1];
             int older = Integer.parseInt(message.split(":")[1].split(",")[2]);
             int newer = Integer.parseInt(message.split(":")[1].split(",")[3]);
@@ -615,6 +677,7 @@ public class GameView implements ContextListening {
             }
         }
         if (message.startsWith("move:ERROR")) {
+            this.ignoreClick = false;
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Choose Player");
             alert.setContentText(message.substring(11));
@@ -671,6 +734,37 @@ public class GameView implements ContextListening {
             messageBox.getChildren().add(hBox1);
             messageBox.getChildren().add(new Label("\n"));
             messageField.clear();
+        }
+
+        if (message.startsWith("drawGame:")) {
+            if (message.startsWith("drawGame:OK,draw")) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("END GAME");
+                alert.setContentText(message.substring(12).toUpperCase());
+                Optional<ButtonType> result = alert.showAndWait();
+                if(result.isEmpty() || result.get() == ButtonType.OK) {
+                    this.goToMenu();
+                }
+            }
+            if (message.startsWith("drawGame:OK,ask")) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("ASK FOR DRAW");
+                alert.setContentText("Do you want to draw the game?");
+                Optional<ButtonType> result = alert.showAndWait();
+                if(result.get() == ButtonType.OK) {
+                    PrintStream saida = new PrintStream(client.getOutputStream());
+                    saida.println("drawGame:YES");
+                } else {
+                    PrintStream saida = new PrintStream(client.getOutputStream());
+                    saida.println("drawGame:NO");
+                }
+            }
+            if (message.startsWith("drawGame:OK,refused")) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("DRAW GAME");
+                alert.setContentText("Your opponent refused to draw the game");
+                alert.show();
+            }
         }
     }
 
