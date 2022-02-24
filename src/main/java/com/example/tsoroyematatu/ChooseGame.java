@@ -3,12 +3,16 @@ package com.example.tsoroyematatu;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -24,6 +28,10 @@ public class ChooseGame implements ContextListening {
     public Pane backContainer;
     @FXML
     public Label nameText;
+    @FXML
+    public ScrollPane gamesPanel;
+    @FXML
+    public VBox gamesBox;
 
     private Stage stage;
     private Scene scene;
@@ -61,8 +69,26 @@ public class ChooseGame implements ContextListening {
 
     @FXML
     public void handleResponse(String message) {
-        if (message.startsWith("getChooseMatch:OK")) {
-            System.out.println(message);
+        if (message.startsWith("getChooseMatch:OK,")) {
+            String games[] = message.substring(18).split(",");
+
+            gamesBox.getChildren().clear();
+            for (String game: games) {
+                HBox hBox = new HBox();
+                hBox.setMinWidth(320);
+                hBox.setMaxWidth(320);
+                hBox.setMinHeight(40);
+                //Creating a Label
+                Label label = new Label(game);
+                hBox.setAlignment(Pos.CENTER_RIGHT);
+                //Setting font to the label
+                label.getStyleClass().add("gamesLabel");
+                hBox.getChildren().add(label);
+                hBox.setOnMouseClicked(mouseEvent -> {
+                    System.out.println(game);
+                });
+                gamesBox.getChildren().add(hBox);
+            }
         }
     }
 

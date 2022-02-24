@@ -22,3 +22,13 @@
     -fx-background-color: transparent;
     -fx-cursor: hand;
 }
+
+.gamesLabel {
+    -fx-font-size: 16px;
+    -fx-text-fill: cadetblue;
+}
+
+.gamesLabel:hover {
+    -fx-background-color: gray;
+    -fx-cursor: hand;
+}
