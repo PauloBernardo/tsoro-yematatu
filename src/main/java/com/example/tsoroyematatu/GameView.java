@@ -85,7 +85,6 @@ public class GameView extends ResizableView implements ContextListening {
 
     private int anotherBall1Position = -1;
     private int anotherBall2Position = -1;
-    private int anotherBall3Position = -1;
 
     @FXML
     public Pane playerBallsPanel;
@@ -258,7 +257,6 @@ public class GameView extends ResizableView implements ContextListening {
     @FXML
     public void selectColor(MouseEvent event) throws IOException {
         PrintStream saida = new PrintStream(client.getOutputStream());
-        System.out.println("Send color: " + ((Circle)event.getSource()).getId());
         saida.println("chooseColor:" + ((Circle)event.getSource()).getId());
     }
 
@@ -352,8 +350,6 @@ public class GameView extends ResizableView implements ContextListening {
     @FXML
     public void handleClickBoardBall(MouseEvent event) {
         Circle circle = ((Circle)event.getSource());
-        System.out.println(circle.getStyleClass().toString());
-        System.out.println("Clicked: " + circle.getStyleClass().toString().equals("emptyBoardBall"));
         if (circle.getStyleClass().toString().contains("emptyBoardBall") && selectedPlayerBall != null) {
             output.println("move:" + getPlayerBallPosition(selectedPlayerBall) + "," + circle.getId().substring(8));
         }
@@ -645,7 +641,6 @@ public class GameView extends ResizableView implements ContextListening {
                     }
                     else {
                         selected = anotherBall3;
-                        anotherBall3Position = newer;
                     }
                 } else {
                     if (older == anotherBall1Position) {
@@ -658,7 +653,6 @@ public class GameView extends ResizableView implements ContextListening {
                     }
                     else {
                         selected = anotherBall3;
-                        anotherBall3Position = newer;
                     }
                 }
 

@@ -59,13 +59,6 @@ public class HistoryView extends ResizableView implements ContextListening {
     }
 
     @FXML
-    public void handleTableClick(MouseEvent event) {
-        if (event.isPrimaryButtonDown() && event.getClickCount() == 1) {
-            System.out.println(tableGames.getSelectionModel().getSelectedItem());
-        }
-    }
-
-    @FXML
     public void handleResponse(String message) {
         if (message.startsWith("getHistory:OK,")) {
             String[] games = message.substring(14).split(",");

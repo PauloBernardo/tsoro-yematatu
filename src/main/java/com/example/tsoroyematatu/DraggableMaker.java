@@ -24,21 +24,12 @@ public class DraggableMaker {
             parent.handleBallDragStarted((Circle) node);
         });
 
-
         node.setOnMouseDragged(mouseEvent -> {
             node.setTranslateX(mouseEvent.getSceneX() - mouseAnchorX);
             node.setTranslateY(mouseEvent.getSceneY() - mouseAnchorY);
         });
 
-        node.setOnMouseDragEntered(mouseEvent -> {
-            System.out.println("On drag detected");
-            System.out.println(node.getTranslateX());
-            System.out.println(node.getTranslateY());
-        });
-
-        node.setOnMouseReleased(mouseEvent -> {
-            parent.handleBallDragDropped((Circle) node, startX, startY);
-        });
+        node.setOnMouseReleased(mouseEvent -> parent.handleBallDragDropped((Circle) node, startX, startY));
 
     }
 }
