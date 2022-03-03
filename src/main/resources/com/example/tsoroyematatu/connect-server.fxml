@@ -13,13 +13,13 @@
    <children>
       <HBox alignment="CENTER" layoutX="5.0" layoutY="110.0" prefHeight="196.0" prefWidth="591.0" AnchorPane.bottomAnchor="110.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="110.0">
          <children>
-            <Pane prefHeight="196.0" prefWidth="420.0">
+            <AnchorPane prefHeight="196.0" prefWidth="395.0">
                <children>
-                  <Button fx:id="nextButton" layoutX="185.0" layoutY="115.0" mnemonicParsing="false" onAction="#onNextClick" text="Next" />
-                  <TextField fx:id="nameField" layoutX="88.0" layoutY="57.0" prefHeight="24.0" prefWidth="272.0" />
-                  <Label layoutX="36.0" layoutY="61.0" text="Name:" />
+                  <Button fx:id="nextButton" layoutX="173.0" layoutY="133.0" mnemonicParsing="false" onAction="#onNextClick" text="Next" />
+                  <TextField fx:id="nameField" layoutX="86.0" layoutY="67.0" prefHeight="24.0" prefWidth="272.0" />
+                  <Label layoutX="32.0" layoutY="71.0" text="Name:" />
                </children>
-            </Pane>
+            </AnchorPane>
          </children>
       </HBox>
       <HBox alignment="CENTER" layoutX="14.0" layoutY="6.0" prefHeight="50.0" prefWidth="449.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -37,9 +37,9 @@
             <Label fx:id="connectionStatus" />
          </children>
       </HBox>
-      <Pane fx:id="backContainer" layoutY="6.0" onMouseClicked="#switchToConnectServer" prefHeight="30.0" prefWidth="77.0">
+      <Pane fx:id="backContainer" layoutY="6.0" onMouseClicked="#switchToHelloView" prefHeight="30.0" prefWidth="77.0">
          <children>
-            <Polygon fill="#b3bfc9" layoutX="68.0" layoutY="66.0" points="-57.0, -46.0, -47.0, -38.0, -47.0, -57.0" stroke="BLACK" strokeType="INSIDE" />
+            <Polygon layoutX="68.0" layoutY="66.0" points="-57.0, -46.0, -47.0, -38.0, -47.0, -57.0" stroke="BLACK" strokeType="INSIDE" styleClass="backContainer" />
             <Label layoutX="31.0" layoutY="11.0" text="Back" />
          </children>
       </Pane>

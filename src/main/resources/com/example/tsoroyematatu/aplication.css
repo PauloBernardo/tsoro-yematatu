@@ -1,19 +1,39 @@
+#anchorPane {
+    -fx-background-color: #59FDB6;
+}
+
 #root {
-    -fxbackground-color: #000;
+    -fx-background-color: #000;
 }
 
 #welcomeText {
     -fx-font-size: 18;
-    -fx-text-fill: gray;
+    -fx-text-fill: #FC4C05;
+}
+
+Label {
+    -fx-text-fill: #194431;
+    -fx-font-weight: 600;
 }
 
 #titleText {
     -fx-font-size: 28;
-    -fx-text-fill: darkslategray;
+    -fx-text-fill: #2C7D5A;
 }
 
 #buttonMain {
-    -fx-background-color: dimgray;
+    -fx-background-color: #2C7D5A;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+.backContainer {
+    -fx-background-color: #2C7D5A;
+    -fx-fill: #2C7D5A;
+}
+
+Button {
+    -fx-background-color: #2C7D5A;
     -fx-text-fill: white;
     -fx-cursor: hand;
 }
@@ -31,4 +51,17 @@
 .gamesLabel:hover {
     -fx-background-color: gray;
     -fx-cursor: hand;
+}
+
+#nameText {
+    -fx-text-fill: #102c21;
+}
+
+#connectionStatus {
+    -fx-text-fill: #102c21;
+}
+
+#historicLabel {
+    -fx-text-fill: #194431;
+    -fx-underline: true;
 }

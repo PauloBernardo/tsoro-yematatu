@@ -1,5 +1,14 @@
+#anchorPane {
+    -fx-background-color: #0DFC93;
+}
+
 #root {
     -fxbackground-color: #000;
+}
+
+Label {
+    -fx-text-fill: #194431;
+    -fx-font-weight: 600;
 }
 
 .colorBalls {
@@ -63,12 +72,12 @@
 
 .gameBallsDisabled {
     -fx-cursor: null;
-    -fx-opacity: 30%;
+    -fx-opacity: 50%;
 }
 
 .gameBallsDisabled:hover {
     -fx-cursor: null;
-    -fx-opacity: 30%;
+    -fx-opacity: 50%;
 }
 
 .emptyBoardBall {
@@ -88,10 +97,26 @@
 
 .anotherGameBalls {
     -fx-cursor: DISAPPEAR;
-    -fx-opacity: 40%;
+    -fx-opacity: 50%;
 }
 
 .messageAnotherLabel {
     -fx-font-size: 14px;
     -fx-text-fill: red;
+}
+
+Button {
+    -fx-background-color: #2C7D5A;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+ScrollPane {
+    -fx-background: transparent;
+    -fx-background-color: #dcfff0;
+    -fx-background-radius: 2px;
+    -fx-border-color: #2C7D5A;
+    -fx-border-radius: 2px;
+    -fx-border-width: 2px;
+    -fx-padding: 10px;
 }

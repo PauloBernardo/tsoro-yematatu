@@ -9,13 +9,15 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class Context {
+    public static String serverIp;
+    public static Integer serverPort;
     private static Context instance = null;
     private final Socket client;
     private final ArrayList<String> buffer;
     private final ArrayList<ContextListening> listeners;
 
     private Context() throws IOException {
-        client = new Socket("127.0.0.1",3322);
+        client = new Socket(serverIp, serverPort);
         buffer = new ArrayList<>();
         listeners = new ArrayList<>();
 
@@ -25,7 +27,7 @@ public class Context {
                 DataInputStream istream = new DataInputStream(client.getInputStream());
                 while (true) {
                     String MRcv = istream.readUTF();
-                    System.out.println("Remoto: "+ MRcv);
+                    System.out.println("Remote message: "+ MRcv);
                     Platform.runLater(() ->  {
                         try {
                             buffer.add(MRcv);
