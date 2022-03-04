@@ -17,7 +17,9 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class GameView extends ResizableView implements ContextListening {
 
@@ -116,6 +118,8 @@ public class GameView extends ResizableView implements ContextListening {
     private double previousPositionX;
     private double previousPositionY;
 
+    ResourceBundle bundle = ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR"));
+
     @FXML
     public void initialize() {
         initClient();
@@ -127,7 +131,7 @@ public class GameView extends ResizableView implements ContextListening {
             Context context = Context.getInstance();
             client = context.getClient();
             context.addListening(this);
-            connectionStatus.setText("Connection established!");
+            connectionStatus.setText(bundle.getString("connectedOK"));
             Platform.runLater(() -> {
                 try {
                     output = new PrintStream(client.getOutputStream());
@@ -153,7 +157,7 @@ public class GameView extends ResizableView implements ContextListening {
             });
             loadingLabel.setText("Loading...");
         } catch (IOException ex) {
-            connectionStatus.setText("Connection not established!");
+            connectionStatus.setText(bundle.getString("connectedError"));
         }
     }
 
@@ -450,7 +454,7 @@ public class GameView extends ResizableView implements ContextListening {
         if (message.startsWith("startRandomMatch:OK")) {
             if (message.split(",").length > 1) {
                 if (message.split(",")[1].equals("wait")) {
-                    loadingLabel.setText("Waiting for another player...");
+                    loadingLabel.setText(bundle.getString("game.waitingAnotherPLayer"));
                 } else {
                     board.getChildren().add(chooseColorPanel);
                     chooseColorPanel.setLayoutX(50);
@@ -470,7 +474,7 @@ public class GameView extends ResizableView implements ContextListening {
         }
 
         if (message.startsWith("startNewMatch:OK")) {
-            loadingLabel.setText("Waiting for another player...");
+            loadingLabel.setText(bundle.getString("game.waitingAnotherPLayer"));
         }
         if (message.startsWith("chooseColor:OK")) {
             if (message.startsWith("chooseColor:OK,another,")) {
@@ -514,13 +518,13 @@ public class GameView extends ResizableView implements ContextListening {
         }
         if (message.startsWith("choosePlayer:OK")) {
             this.playerTurn = message.substring(16);
-            loadingLabel.setText("Waiting another player choose...");
+            loadingLabel.setText(bundle.getString("game.waitingPlayerChoose"));
         }
         if (message.startsWith("choosePlayer:ERROR")) {
             this.playerTurn = message.substring(19);
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Choose Player");
-            alert.setContentText("Your rival choose this player first.");
+            alert.setTitle(bundle.getString("game.choosePlayerTitleError"));
+            alert.setContentText(bundle.getString("game.choosePlayerTextError"));
             alert.show();
         }
         if (message.startsWith("begin:OK")) {
@@ -571,13 +575,13 @@ public class GameView extends ResizableView implements ContextListening {
                     playerBall2.getStyleClass().remove("gameBallsDisabled");
                 if (playerBall3.getParent() != gamePanel || (playerBall1.getParent() == gamePanel && playerBall2.getParent() == gamePanel))
                     playerBall3.getStyleClass().remove("gameBallsDisabled");
-                turnLabel.setText("Your turn");
+                turnLabel.setText(bundle.getString("game.yourTurn"));
             } else {
                 playerBall1.getStyleClass().add("gameBallsDisabled");
                 playerBall2.getStyleClass().add("gameBallsDisabled");
                 playerBall3.getStyleClass().add("gameBallsDisabled");
                 turnLabel.setText(message.substring(8));
-                turnLabel.setText("Waiting another player move...");
+                turnLabel.setText(bundle.getString("game.waitingAnotherPLayer"));
             }
         }
         if (message.startsWith("move:OK")) {
@@ -701,7 +705,7 @@ public class GameView extends ResizableView implements ContextListening {
             }
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("END GAME");
+            alert.setTitle(bundle.getString("game.endGame"));
             alert.setContentText(message.substring(11).toUpperCase());
             Optional<ButtonType> result = alert.showAndWait();
             if(result.isEmpty() || result.get() == ButtonType.OK) {
@@ -742,7 +746,7 @@ public class GameView extends ResizableView implements ContextListening {
         if (message.startsWith("drawGame:")) {
             if (message.startsWith("drawGame:OK,draw")) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("END GAME");
+                alert.setTitle(bundle.getString("game.endGame"));
                 alert.setContentText(message.substring(12).toUpperCase());
                 Optional<ButtonType> result = alert.showAndWait();
                 if(result.isEmpty() || result.get() == ButtonType.OK) {
@@ -751,8 +755,8 @@ public class GameView extends ResizableView implements ContextListening {
             }
             if (message.startsWith("drawGame:OK,ask")) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("ASK FOR DRAW");
-                alert.setContentText("Do you want to draw the game?");
+                alert.setTitle(bundle.getString("game.drawTitleAsk"));
+                alert.setContentText(bundle.getString("game.drawTextAsk"));
                 Optional<ButtonType> result = alert.showAndWait();
                 if(result.isPresent() && result.get() == ButtonType.OK) {
                     PrintStream saida = new PrintStream(client.getOutputStream());
@@ -764,8 +768,8 @@ public class GameView extends ResizableView implements ContextListening {
             }
             if (message.startsWith("drawGame:OK,refused")) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("DRAW GAME");
-                alert.setContentText("Your opponent refused to draw the game");
+                alert.setTitle(bundle.getString("game.drawTitleError"));
+                alert.setContentText(bundle.getString("game.drawTextError"));
                 alert.show();
             }
         }

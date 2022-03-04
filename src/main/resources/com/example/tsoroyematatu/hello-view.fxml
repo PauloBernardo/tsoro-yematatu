@@ -11,7 +11,7 @@
    <children>
       <HBox alignment="CENTER" layoutX="85.0" layoutY="83.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
          <children>
-              <Button fx:id="buttonMain" alignment="CENTER" onAction="#switchToConnectServer" prefHeight="67.0" prefWidth="214.0" text="Iniciar" textAlignment="CENTER">
+              <Button fx:id="buttonMain" alignment="CENTER" onAction="#switchToConnectServer" prefHeight="67.0" prefWidth="214.0" text="%hello.button" textAlignment="CENTER">
                <font>
                   <Font size="18.0" />
                </font>
@@ -20,7 +20,7 @@
       </HBox>
       <HBox alignment="CENTER" layoutX="20.0" layoutY="14.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-              <Label fx:id="titleText" text="Tsoro Yematatu" textFill="#5a4eae">
+              <Label fx:id="titleText" text="%title" textFill="#5a4eae">
                <font>
                   <Font size="24.0" />
                </font>

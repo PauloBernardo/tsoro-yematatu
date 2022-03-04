@@ -14,7 +14,7 @@
    <children>
       <HBox alignment="CENTER" layoutX="126.0" layoutY="9.0" prefHeight="68.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label fx:id="titleText" alignment="CENTER" text="Tsoro Yematatu" textAlignment="CENTER" textFill="#5a4eae">
+            <Label fx:id="titleText" alignment="CENTER" text="%title" textAlignment="CENTER" textFill="#5a4eae">
                <font>
                   <Font size="24.0" />
                </font>
@@ -24,18 +24,18 @@
       <Pane fx:id="backContainer" layoutX="10.0" layoutY="16.0" prefHeight="30.0" prefWidth="77.0">
          <children>
             <Polygon layoutX="68.0" layoutY="66.0" points="-57.0, -46.0, -47.0, -38.0, -47.0, -57.0" stroke="BLACK" strokeType="INSIDE" styleClass="backContainer" />
-            <Label layoutX="31.0" layoutY="11.0" onMouseClicked="#switchToConnectServer" text="Back" />
+            <Label layoutX="31.0" layoutY="11.0" onMouseClicked="#switchToConnectServer" text="%backButton" />
          </children>
       </Pane>
       <HBox alignment="CENTER" layoutY="72.0" prefHeight="50.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
          <children>
-            <Label text="Player: " />
+            <Label text="%menu.player" />
             <Label fx:id="nameText" alignment="CENTER" contentDisplay="CENTER" />
          </children>
       </HBox>
       <HBox alignment="BOTTOM_LEFT" layoutX="24.0" layoutY="288.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Label text="Server connection: " />
+            <Label text="%serverStatus" />
             <Label fx:id="connectionStatus" />
          </children>
          <padding>
@@ -46,16 +46,16 @@
          <children>
             <Pane prefHeight="219.0" prefWidth="303.0">
                <children>
-                  <Button layoutX="106.0" layoutY="24.0" mnemonicParsing="false" onAction="#onButtonNewClick" text="New Match" />
-                  <Button layoutX="97.0" layoutY="65.0" mnemonicParsing="false" onAction="#onButtonChooseClick" text="Choose Match" />
-                  <Button layoutX="94.0" layoutY="109.0" mnemonicParsing="false" onAction="#onButtonRandomClick" text="Random Match" />
+                  <Button layoutX="106.0" layoutY="24.0" mnemonicParsing="false" onAction="#onButtonNewClick" text="%menu.newMatch" />
+                  <Button layoutX="97.0" layoutY="65.0" mnemonicParsing="false" onAction="#onButtonChooseClick" text="%menu.chooseMatch" />
+                  <Button layoutX="94.0" layoutY="109.0" mnemonicParsing="false" onAction="#onButtonRandomClick" text="%menu.randomMatch" />
                </children>
             </Pane>
          </children>
       </HBox>
       <HBox alignment="BOTTOM_RIGHT" layoutX="34.0" layoutY="298.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Label fx:id="historicLabel" onMouseClicked="#onButtonHistoricClick" text="Historic" textFill="#065b0a">
+            <Label fx:id="historicLabel" onMouseClicked="#onButtonHistoricClick" text="%menu.historic" textFill="#065b0a">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>

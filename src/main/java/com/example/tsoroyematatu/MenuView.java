@@ -14,7 +14,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class MenuView extends ResizableView implements ContextListening {
 
@@ -30,17 +32,19 @@ public class MenuView extends ResizableView implements ContextListening {
         initClient();
     }
 
+    ResourceBundle bundle = ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR"));
+
     @FXML
     private void initClient(){
         try {
             Context context = Context.getInstance();
             Socket client = context.getClient();
             context.addListening(this);
-            connectionStatus.setText("Connection established!");
+            connectionStatus.setText(bundle.getString("connectedOK"));
             PrintStream saida = new PrintStream(client.getOutputStream());
             saida.println("getName:");
         } catch (IOException ex) {
-            connectionStatus.setText("Connection not established!");
+            connectionStatus.setText(bundle.getString("connectedError"));
         }
     }
 
@@ -52,6 +56,7 @@ public class MenuView extends ResizableView implements ContextListening {
     public void onButtonClick(ActionEvent event, String type) throws IOException {
         Context.getInstance().removeListening(this);
         FXMLLoader fxmlLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("game-view.fxml")));
+        fxmlLoader.setResources(ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR")));
         Parent rootMain = fxmlLoader.load();
         GameView controller = fxmlLoader.getController();
         controller.setType(type);

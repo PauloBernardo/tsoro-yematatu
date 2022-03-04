@@ -12,6 +12,8 @@ import javafx.scene.layout.Pane;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class ConnectServer extends ResizableView implements ContextListening {
 
@@ -26,6 +28,8 @@ public class ConnectServer extends ResizableView implements ContextListening {
 
     private Socket cliente;
 
+    ResourceBundle bundle = ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR"));
+
 
     @FXML
     public void initialize() {
@@ -37,10 +41,10 @@ public class ConnectServer extends ResizableView implements ContextListening {
             Context context = Context.getInstance();
             cliente = context.getClient();
             context.addListening(this);
-            connectionStatus.setText("Connection established!");
+            connectionStatus.setText(bundle.getString("connectedOK"));
 
         } catch (IOException ex) {
-            connectionStatus.setText("Connection not established!");
+            connectionStatus.setText(bundle.getString("connectError"));
         }
     }
 
@@ -58,14 +62,14 @@ public class ConnectServer extends ResizableView implements ContextListening {
 
     @FXML
     public void onNextClick(ActionEvent event) throws IOException {
-        if (connectionStatus.getText().equals("Connection established!") && cliente.isConnected()) {
+        if (connectionStatus.getText().equals(bundle.getString("connectedOK")) && cliente.isConnected()) {
             PrintStream saida = new PrintStream(cliente.getOutputStream());
             saida.println("setName:" + nameField.getText());
             ((Button)event.getSource()).setText("Loading...");
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Server Connection");
-            alert.setContentText("There is a error on the connection if server. Please, be sure that server is on and try again.");
+            alert.setTitle(bundle.getString("connect.errorTitle"));
+            alert.setContentText(bundle.getString("connect.errorText"));
             alert.show();
         }
     }

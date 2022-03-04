@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class HistoryView extends ResizableView implements ContextListening {
 
@@ -39,17 +41,19 @@ public class HistoryView extends ResizableView implements ContextListening {
         initClient();
     }
 
+    ResourceBundle bundle = ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR"));
+
     @FXML
     private void initClient(){
         try {
             Context context = Context.getInstance();
             Socket client = context.getClient();
             context.addListening(this);
-            connectionStatus.setText("Connection established!");
+            connectionStatus.setText(bundle.getString("connectedOK"));
             PrintStream saida = new PrintStream(client.getOutputStream());
             saida.println("getHistory:");
         } catch (IOException ex) {
-            connectionStatus.setText("Connection not established!");
+            connectionStatus.setText(bundle.getString("connectedError"));
         }
     }
 

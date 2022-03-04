@@ -17,7 +17,7 @@
    <children>
       <Pane fx:id="chooseColorPanel" layoutX="-98.0" layoutY="-232.0" opacity="0.0" prefHeight="200.0" prefWidth="439.0">
          <children>
-            <Label layoutX="171.0" layoutY="24.0" text="Choose Your Color" />
+            <Label layoutX="171.0" layoutY="24.0" text="%game.chooseColor" />
             <Circle fx:id="blackColor" fill="#070606" layoutX="61.0" layoutY="108.0" onMouseClicked="#selectColor" radius="32.0" stroke="BLACK" strokeType="INSIDE" styleClass="colorBalls">
                <cursor>
                   <Cursor fx:constant="HAND" />
@@ -47,8 +47,8 @@
       </Pane>
       <Pane fx:id="board" layoutX="25.0" layoutY="40.0" prefHeight="504.0" prefWidth="900.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="25.0">
          <children>
-            <Label layoutX="14.0" layoutY="474.0" text="Turn: " />
-            <Label fx:id="turnLabel" layoutX="53.0" layoutY="474.0" />
+            <Label layoutX="14.0" layoutY="474.0" text="%game.turn" />
+            <Label fx:id="turnLabel" layoutX="110.0" layoutY="474.0" />
             <HBox alignment="CENTER" layoutX="7.0" layoutY="361.0" prefHeight="100.0" prefWidth="649.0">
                <children>
                   <Label fx:id="loadingLabel" />
@@ -58,18 +58,18 @@
       </Pane>
       <HBox layoutX="14.0" layoutY="15.0" prefHeight="24.0" prefWidth="600.0">
          <children>
-            <Label text="Player: " />
+            <Label text="%game.player" />
             <Label fx:id="nameText" alignment="CENTER" contentDisplay="CENTER" />
          </children>
       </HBox>
       <Label layoutX="-22.0" layoutY="-40.0" text="Label" />
       <Pane fx:id="choosePlayer" layoutX="561.0" layoutY="-240.0" opacity="0.0" prefHeight="200.0" prefWidth="463.0">
          <children>
-            <Label layoutX="167.0" layoutY="14.0" text="Choose Your PLayer" />
+            <Label layoutX="167.0" layoutY="14.0" text="%game.choosePlayer" />
             <Circle fx:id="player1Ball" fill="WHITE" layoutX="126.0" layoutY="136.0" onMouseClicked="#selectPlayer" radius="65.0" stroke="BLACK" strokeType="INSIDE" styleClass="playerBalls" />
             <Circle fx:id="player2Ball" fill="WHITE" layoutX="362.0" layoutY="136.0" onMouseClicked="#selectPlayer" radius="65.0" stroke="BLACK" strokeType="INSIDE" styleClass="playerBalls" />
-            <Label layoutX="100.0" layoutY="128.0" text="Player 1" />
-            <Label layoutX="336.0" layoutY="128.0" text="Player 2" />
+            <Label layoutX="100.0" layoutY="128.0" text="%game.player1" />
+            <Label layoutX="336.0" layoutY="128.0" text="%game.player2" />
          </children>
       </Pane>
       <Pane fx:id="gamePanel" layoutX="-400.0" layoutY="-600.0" prefHeight="435.0" prefWidth="600.0">
@@ -109,25 +109,25 @@
       </Pane>
       <Pane layoutX="970.0" layoutY="9.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Button fx:id="sendButton" disable="true" layoutX="274.0" layoutY="510.0" mnemonicParsing="false" onAction="#chatMessageSend" prefHeight="24.0" prefWidth="70.0" text="Send" />
+            <Button fx:id="sendButton" disable="true" layoutX="274.0" layoutY="510.0" mnemonicParsing="false" onAction="#chatMessageSend" prefHeight="24.0" prefWidth="70.0" text="%game.sendButton" />
             <ScrollPane hbarPolicy="NEVER" layoutX="15.0" layoutY="60.0" prefHeight="444.0" prefWidth="328.0">
                <content>
                   <VBox fx:id="messageBox" />
                </content>
             </ScrollPane>
-            <Label layoutX="15.0" layoutY="40.0" text="Messaging Box" />
-            <TextField fx:id="messageField" layoutX="15.0" layoutY="510.0" prefHeight="24.0" prefWidth="254.0" promptText="Your message..." />
+            <Label layoutX="15.0" layoutY="40.0" text="%game.messageBox" />
+            <TextField fx:id="messageField" layoutX="15.0" layoutY="510.0" prefHeight="24.0" prefWidth="254.0" promptText="%game.placeHolderMessage" />
          </children>
       </Pane>
       <Pane layoutX="992.0" layoutY="12.0" prefHeight="32.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Button fx:id="buttonLeft" layoutX="195.0" mnemonicParsing="false" onAction="#switchToConnectServer" prefHeight="32.0" prefWidth="97.0" text="Left" />
-            <Button fx:id="buttonDraw" disable="true" layoutX="55.0" mnemonicParsing="false" onAction="#askDraw" prefHeight="32.0" prefWidth="97.0" text="Draw" />
+            <Button fx:id="buttonLeft" layoutX="195.0" mnemonicParsing="false" onAction="#switchToConnectServer" prefHeight="32.0" prefWidth="97.0" text="%game.exitButton" />
+            <Button fx:id="buttonDraw" disable="true" layoutX="55.0" mnemonicParsing="false" onAction="#askDraw" prefHeight="32.0" prefWidth="97.0" text="%game.drawButton" />
          </children>
       </Pane>
       <HBox layoutY="508.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
          <children>
-            <Label text="Server connection: " />
+            <Label text="%serverStatus" />
             <Label fx:id="connectionStatus" />
          </children>
       </HBox>

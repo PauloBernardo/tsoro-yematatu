@@ -21,7 +21,9 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class ChooseGame extends ResizableView implements ContextListening {
 
@@ -39,6 +41,8 @@ public class ChooseGame extends ResizableView implements ContextListening {
     public AnchorPane anchorPane;
 
     private Socket client;
+
+    ResourceBundle bundle = ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR"));
 
     @FXML
     public void initialize() {
@@ -70,11 +74,11 @@ public class ChooseGame extends ResizableView implements ContextListening {
             Context context = Context.getInstance();
             client = context.getClient();
             context.addListening(this);
-            connectionStatus.setText("Connection established!");
+            connectionStatus.setText(bundle.getString("connectedOK"));
             PrintStream saida = new PrintStream(client.getOutputStream());
             saida.println("getChooseMatch:");
         } catch (IOException ex) {
-            connectionStatus.setText("Connection not established!");
+            connectionStatus.setText(bundle.getString("connectedError"));
         }
     }
 
@@ -108,6 +112,7 @@ public class ChooseGame extends ResizableView implements ContextListening {
         if (message.startsWith("startChooseMatch:OK,start")) {
             Context.getInstance().removeListening(this);
             FXMLLoader fxmlLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("game-view.fxml")));
+            fxmlLoader.setResources(ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR")));
             Parent rootMain = fxmlLoader.load();
             GameView controller = fxmlLoader.getController();
             controller.setType("choose");

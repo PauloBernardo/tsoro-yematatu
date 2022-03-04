@@ -7,12 +7,17 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class TsoroYematatuApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(TsoroYematatuApplication.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 723, 365);
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(TsoroYematatuApplication.class.getResource("hello-view.fxml"));
+        loader.setResources(ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR")));
+        Scene scene = new Scene(loader.load(), 723, 365);
         Image image = new Image("file:icon.png");
         stage.getIcons().add(image);
         stage.setTitle("Tsoro Yematatu!");

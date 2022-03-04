@@ -13,7 +13,7 @@
    <children>
       <HBox layoutX="24.0" layoutY="296.0" prefHeight="20.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Label text=" Server connection: " />
+            <Label text="%serverStatus" />
             <Label fx:id="connectionStatus" />
          </children>
       </HBox>
@@ -29,13 +29,13 @@
       <Pane fx:id="backContainer" layoutX="10.0" layoutY="16.0" onMouseClicked="#switchToMenu" prefHeight="30.0" prefWidth="77.0">
          <children>
             <Polygon layoutX="68.0" layoutY="66.0" points="-57.0, -46.0, -47.0, -38.0, -47.0, -57.0" stroke="BLACK" strokeType="INSIDE" styleClass="backContainer" />
-            <Label layoutX="31.0" layoutY="11.0" text="Back" />
+            <Label layoutX="31.0" layoutY="11.0" text="%backButton" />
          </children>
       </Pane>
       <TableView fx:id="tableGames" layoutX="101.0" layoutY="100.0" prefHeight="200.0" prefWidth="398.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="101.0" AnchorPane.rightAnchor="101.0" AnchorPane.topAnchor="100.0">
         <columns>
-          <TableColumn fx:id="gameCol" editable="false" maxWidth="1.7976931348623157E308" minWidth="150.0" prefWidth="150.0" text="Game" />
-          <TableColumn fx:id="resultCol" editable="false" maxWidth="1.7976931348623157E308" minWidth="150.0" prefWidth="150.0" text="Result" />
+          <TableColumn fx:id="gameCol" editable="false" maxWidth="1.7976931348623157E308" minWidth="150.0" prefWidth="150.0" text="%historic.gameCol" />
+          <TableColumn fx:id="resultCol" editable="false" maxWidth="1.7976931348623157E308" minWidth="150.0" prefWidth="150.0" text="%historic.resultCol" />
         </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
