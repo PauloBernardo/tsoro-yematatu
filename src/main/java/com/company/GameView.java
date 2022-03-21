@@ -135,11 +135,11 @@ public class GameView extends ResizableView implements ContextListening {
                 try {
                     switch (this.type) {
                         case "new":
-                            if (server.startNewMatch())
+                            if (server.startNewMatch(Context.getInstance().getPath()))
                                 loadingLabel.setText(bundle.getString("game.waitingAnotherPLayer"));
                             break;
                         case "random":
-                            String message = server.startRandomMatch();
+                            String message = server.startRandomMatch(Context.getInstance().getPath());
                             if (message.equals("wait")) {
                                 loadingLabel.setText(bundle.getString("game.waitingAnotherPLayer"));
                             } else {
@@ -158,7 +158,7 @@ public class GameView extends ResizableView implements ContextListening {
                             loadingLabel.setText("");
                             break;
                     }
-                    nameText.setText(server.getName());
+                    nameText.setText(server.getName(Context.getInstance().getPath()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -259,16 +259,16 @@ public class GameView extends ResizableView implements ContextListening {
     @FXML
     public void switchToConnectServer() throws Exception {
         if (this.actualPlayTurn != null) {
-            server.endGame();
+            server.endGame(Context.getInstance().getPath());
         } else {
-            server.cancelGame();
+            server.cancelGame(Context.getInstance().getPath());
         }
         this.goToMenu();
     }
 
     @FXML
     public void selectColor(MouseEvent event) throws Exception {
-        if (server.chooseColor(((Circle)event.getSource()).getId())) {
+        if (server.chooseColor(Context.getInstance().getPath(), ((Circle)event.getSource()).getId())) {
             board.getChildren().remove(chooseColorPanel);
             chooseColorPanel.setLayoutX(-500);
             chooseColorPanel.setLayoutY(-1000);
@@ -306,7 +306,7 @@ public class GameView extends ResizableView implements ContextListening {
         }
 
         try {
-            if(server.choosePlayer(playerValue)) {
+            if(server.choosePlayer(Context.getInstance().getPath(), playerValue)) {
                 this.playerTurn = playerValue;
                 loadingLabel.setText(bundle.getString("game.waitingPlayerChoose"));
             } else {
@@ -443,12 +443,12 @@ public class GameView extends ResizableView implements ContextListening {
         messageBox.getChildren().add(new Label("\n"));
 
 
-        if(server.chatMessage(messageField.getText()).equals(messageField.getText())) messageField.clear();
+        if(server.chatMessage(Context.getInstance().getPath(), messageField.getText()).equals(messageField.getText())) messageField.clear();
     }
 
     @FXML
     private void askDraw() throws Exception {
-        server.drawGame("YES");
+        server.drawGame(Context.getInstance().getPath(),"YES");
     }
 
     @FXML
@@ -738,9 +738,9 @@ public class GameView extends ResizableView implements ContextListening {
                 alert.setContentText(bundle.getString("game.drawTextAsk"));
                 Optional<ButtonType> result = alert.showAndWait();
                 if(result.isPresent() && result.get() == ButtonType.OK) {
-                    server.drawGame("YES");
+                    server.drawGame(Context.getInstance().getPath(), "YES");
                 } else {
-                    server.drawGame("NO");
+                    server.drawGame(Context.getInstance().getPath(), "NO");
                 }
             }
             if (message.startsWith("drawGame:OK,refused")) {

@@ -60,7 +60,7 @@ public class ConnectServer extends ResizableView implements ContextListening {
         if (connectionStatus.getText().equals(bundle.getString("connectedOK"))) {
             try {
                 ((Button)event.getSource()).setText(bundle.getString("loadingLabel"));
-                server.setName(nameField.getText());
+                server.setName(Context.getInstance().getPath(), nameField.getText());
                 this.switchBetweenScreen(anchorPane.getScene(), "menu-view.fxml");
             } catch (Exception e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);

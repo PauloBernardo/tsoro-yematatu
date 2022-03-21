@@ -40,7 +40,7 @@ public class MenuView extends ResizableView implements ContextListening {
             context.addListening(this);
             connectionStatus.setText(bundle.getString("connectedOK"));
             try {
-                nameText.setText(server.getName());
+                nameText.setText(server.getName(Context.getInstance().getPath()));
             } catch (Exception e) {
                 e.printStackTrace();
             }

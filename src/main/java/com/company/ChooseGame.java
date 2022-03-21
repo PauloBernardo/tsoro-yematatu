@@ -75,7 +75,7 @@ public class ChooseGame extends ResizableView implements ContextListening {
             connectionStatus.setText(bundle.getString("connectedOK"));
 
             try {
-                ArrayList<GameDescription> games = server.getChooseMatch();
+                ArrayList<GameDescription> games = server.getChooseMatch(Context.getInstance().getPath());
                 ArrayList<Game> gamesObject = new ArrayList<>();
                 for (GameDescription game: games) {
                     gamesObject.add(new Game("", "", game.getPlayer(), game.getId()));
@@ -94,7 +94,7 @@ public class ChooseGame extends ResizableView implements ContextListening {
     public void handleTableClick(MouseEvent event) throws IOException {
         if (event.isPrimaryButtonDown() && event.getClickCount() == 1) {
             try {
-                if(server.startChooseMatch( ((Game)tableGames.getSelectionModel().getSelectedItem()).getId())) {
+                if(server.startChooseMatch(Context.getInstance().getPath(), ((Game)tableGames.getSelectionModel().getSelectedItem()).getId())) {
                     Context.getInstance().removeListening(this);
                     FXMLLoader fxmlLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("game-view.fxml")));
                     fxmlLoader.setResources(ResourceBundle.getBundle("com.company.i18n", new Locale("pt_br", "pt_BR")));

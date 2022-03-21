@@ -12,6 +12,7 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
     public static String serverIp;
     public static Integer serverPort;
     private static Context instance = null;
+    private String path;
     private TsoroYematatuServerInterface server;
     private final ArrayList<String> buffer;
     private final ArrayList<ContextListening> listeners;
@@ -27,7 +28,17 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
             try {
                 instance = new Context();
                 Registry registry = LocateRegistry.getRegistry(0);
-                registry.rebind("tsoro-yematatu-client", instance);
+                int clientNumber = 1;
+                while(true) {
+                    try {
+                        registry.bind("tsoro-yematatu-client-" + clientNumber, instance);
+                        instance.path = "tsoro-yematatu-client-" + clientNumber;
+                        break;
+                    } catch (Exception e) {
+                        System.out.println("Probably the clientNumber " + clientNumber + " is on.");
+                        clientNumber++;
+                    }
+                }
                 instance.getServer();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -41,7 +52,7 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
             try {
                 server = (TsoroYematatuServerInterface) Naming.lookup("tsoro-yematatu-server");
                 try {
-                    server.registry("tsoro-yematatu-client");
+                    server.registry(this.path, this.path);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -118,5 +129,13 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
     @Override
     public void chatMessage(String name, String message) {
 
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

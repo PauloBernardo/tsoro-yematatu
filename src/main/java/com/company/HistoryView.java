@@ -49,7 +49,7 @@ public class HistoryView extends ResizableView implements ContextListening {
             context.addListening(this);
             connectionStatus.setText(bundle.getString("connectedOK"));
             try {
-                ArrayList<GameDescription> games = server.getHistory();
+                ArrayList<GameDescription> games = server.getHistory(Context.getInstance().getPath());
                 ArrayList<Game> gamesObject = new ArrayList<>();
                 for (GameDescription game: games) {
                     gamesObject.add(new Game(game.getGame(), game.getResult(), "", ""));
