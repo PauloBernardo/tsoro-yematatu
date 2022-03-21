@@ -1,4 +1,4 @@
-package com.example.tsoroyematatu;
+package com.company;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +16,7 @@ public class TsoroYematatuApplication extends Application {
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(TsoroYematatuApplication.class.getResource("hello-view.fxml"));
-        loader.setResources(ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR")));
+        loader.setResources(ResourceBundle.getBundle("com.company.i18n", new Locale("pt_br", "pt_BR")));
         Scene scene = new Scene(loader.load(), 723, 365);
         Image image = new Image("file:icon.png");
         stage.getIcons().add(image);
@@ -27,7 +27,7 @@ public class TsoroYematatuApplication extends Application {
 
     public static void main(String[] args) {
         Context.serverIp = args.length > 0  ? args[0] : "127.0.0.1";
-        Context.serverPort = args.length > 1 ? Integer.parseInt(args[1]) : 3322;
+        Context.serverPort = args.length > 1 ? Integer.parseInt(args[1]) : 5111;
         launch();
     }
 }

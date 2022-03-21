@@ -1,4 +1,4 @@
-package com.example.tsoroyematatu;
+package com.company;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

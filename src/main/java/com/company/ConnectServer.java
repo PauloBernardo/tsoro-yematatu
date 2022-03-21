@@ -1,4 +1,4 @@
-package com.example.tsoroyematatu;
+package com.company;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -10,8 +10,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.net.Socket;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -26,10 +24,9 @@ public class ConnectServer extends ResizableView implements ContextListening {
     @FXML
     public AnchorPane anchorPane;
 
-    private Socket cliente;
+    private TsoroYematatuServerInterface server;
 
-    ResourceBundle bundle = ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR"));
-
+    ResourceBundle bundle = ResourceBundle.getBundle("com.company.i18n", new Locale("pt_br", "pt_BR"));
 
     @FXML
     public void initialize() {
@@ -39,7 +36,7 @@ public class ConnectServer extends ResizableView implements ContextListening {
     private void initCliente(){
         try {
             Context context = Context.getInstance();
-            cliente = context.getClient();
+            server = context.getServer();
             context.addListening(this);
             connectionStatus.setText(bundle.getString("connectedOK"));
 
@@ -49,10 +46,8 @@ public class ConnectServer extends ResizableView implements ContextListening {
     }
 
     @FXML
-    public void handleResponse(String message) throws Exception {
-        if (message.startsWith("setName:OK")) {
-            this.switchBetweenScreen(anchorPane.getScene(), "menu-view.fxml");
-        }
+    public void handleResponse(String message) {
+
     }
 
     @FXML
@@ -61,11 +56,18 @@ public class ConnectServer extends ResizableView implements ContextListening {
     }
 
     @FXML
-    public void onNextClick(ActionEvent event) throws IOException {
-        if (connectionStatus.getText().equals(bundle.getString("connectedOK")) && cliente.isConnected()) {
-            PrintStream saida = new PrintStream(cliente.getOutputStream());
-            saida.println("setName:" + nameField.getText());
-            ((Button)event.getSource()).setText("Loading...");
+    public void onNextClick(ActionEvent event) {
+        if (connectionStatus.getText().equals(bundle.getString("connectedOK"))) {
+            try {
+                ((Button)event.getSource()).setText(bundle.getString("loadingLabel"));
+                server.setName(nameField.getText());
+                this.switchBetweenScreen(anchorPane.getScene(), "menu-view.fxml");
+            } catch (Exception e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle(bundle.getString("connect.errorTitle"));
+                alert.setContentText(bundle.getString("connect.errorText"));
+                alert.show();
+            }
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(bundle.getString("connect.errorTitle"));

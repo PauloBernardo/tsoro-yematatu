@@ -13,7 +13,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
 
-<AnchorPane fx:id="anchorPane" prefWidth="1200.0" stylesheets="@game.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tsoroyematatu.GameView">
+<AnchorPane fx:id="anchorPane" prefWidth="1200.0" stylesheets="@game.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.company.GameView">
    <children>
       <Pane fx:id="chooseColorPanel" layoutX="-98.0" layoutY="-232.0" opacity="0.0" prefHeight="200.0" prefWidth="439.0">
          <children>

@@ -1,4 +1,4 @@
-package com.example.tsoroyematatu;
+package com.company;
 
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
@@ -16,7 +16,6 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.Socket;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -105,7 +104,7 @@ public class GameView extends ResizableView implements ContextListening {
     @FXML
     public Circle gameBall6;
 
-    private Socket client;
+    private TsoroYematatuServerInterface server;
     private String type;
     private String playerTurn;
     private String actualPlayTurn;
@@ -118,7 +117,7 @@ public class GameView extends ResizableView implements ContextListening {
     private double previousPositionX;
     private double previousPositionY;
 
-    ResourceBundle bundle = ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR"));
+    ResourceBundle bundle = ResourceBundle.getBundle("com.company.i18n", new Locale("pt_br", "pt_BR"));
 
     @FXML
     public void initialize() {
@@ -129,18 +128,27 @@ public class GameView extends ResizableView implements ContextListening {
     private void initClient(){
         try {
             Context context = Context.getInstance();
-            client = context.getClient();
+            server = context.getServer();
             context.addListening(this);
             connectionStatus.setText(bundle.getString("connectedOK"));
             Platform.runLater(() -> {
                 try {
-                    output = new PrintStream(client.getOutputStream());
                     switch (this.type) {
                         case "new":
-                            output.println("startNewMatch:");
+                            if (server.startNewMatch())
+                                loadingLabel.setText(bundle.getString("game.waitingAnotherPLayer"));
                             break;
                         case "random":
-                            output.println("startRandomMatch:");
+                            String message = server.startRandomMatch();
+                            if (message.equals("wait")) {
+                                loadingLabel.setText(bundle.getString("game.waitingAnotherPLayer"));
+                            } else {
+                                board.getChildren().add(chooseColorPanel);
+                                chooseColorPanel.setLayoutX(50);
+                                chooseColorPanel.setLayoutY(100);
+                                chooseColorPanel.setOpacity(1);
+                                loadingLabel.setText("");
+                            }
                             break;
                         case "choose":
                             board.getChildren().add(chooseColorPanel);
@@ -150,8 +158,8 @@ public class GameView extends ResizableView implements ContextListening {
                             loadingLabel.setText("");
                             break;
                     }
-                    output.println("getName:");
-                } catch (IOException e) {
+                    nameText.setText(server.getName());
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
@@ -249,23 +257,36 @@ public class GameView extends ResizableView implements ContextListening {
     }
 
     @FXML
-    public void switchToConnectServer() throws IOException {
-        PrintStream saida = new PrintStream(client.getOutputStream());
+    public void switchToConnectServer() throws Exception {
         if (this.actualPlayTurn != null) {
-            saida.println("endGame:");
+            server.endGame();
         } else {
-            saida.println("cancelGame:");
+            server.cancelGame();
+        }
+        this.goToMenu();
+    }
+
+    @FXML
+    public void selectColor(MouseEvent event) throws Exception {
+        if (server.chooseColor(((Circle)event.getSource()).getId())) {
+            board.getChildren().remove(chooseColorPanel);
+            chooseColorPanel.setLayoutX(-500);
+            chooseColorPanel.setLayoutY(-1000);
+            chooseColorPanel.setOpacity(0);
+            board.getChildren().add(choosePlayer);
+            choosePlayer.setLayoutX(50);
+            choosePlayer.setLayoutY(100);
+            choosePlayer.setOpacity(1);
+
+            String playerColor = ((Circle)event.getSource()).getId();
+            alterBallsPlayers("yourself", playerColor);
+            loadingLabel.setText("");
         }
     }
 
     @FXML
-    public void selectColor(MouseEvent event) throws IOException {
-        PrintStream saida = new PrintStream(client.getOutputStream());
-        saida.println("chooseColor:" + ((Circle)event.getSource()).getId());
-    }
-
-    @FXML
     public void selectPlayer(MouseEvent event) throws IOException {
+        String playerValue = "";
         if (
             player1Ball.getStyleClass().toString().equals("playerBallsSelected") ||
             player2Ball.getStyleClass().toString().equals("playerBallsSelected")
@@ -274,15 +295,25 @@ public class GameView extends ResizableView implements ContextListening {
             return;
         }
 
-        PrintStream saida = new PrintStream(client.getOutputStream());
         if (((Circle)event.getSource()).getId().equals("player1Ball")) {
             player1Ball.getStyleClass().remove("playerBalls");
             player1Ball.getStyleClass().add("playerBallsSelected");
-            saida.println("choosePlayer:player1");
+            playerValue = "player1";
         } else {
             player2Ball.getStyleClass().remove("playerBalls");
             player2Ball.getStyleClass().add("playerBallsSelected");
-            saida.println("choosePlayer:player2");
+            playerValue = "player2";
+        }
+
+        try {
+            if(server.choosePlayer(playerValue)) {
+                this.playerTurn = playerValue;
+                loadingLabel.setText(bundle.getString("game.waitingPlayerChoose"));
+            } else {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -393,7 +424,7 @@ public class GameView extends ResizableView implements ContextListening {
 
 
     @FXML
-    public void chatMessageSend() throws IOException {
+    public void chatMessageSend() throws Exception {
         //Creating a Label
         Label label = new Label(this.nameText.getText());
         //Setting font to the label
@@ -412,15 +443,12 @@ public class GameView extends ResizableView implements ContextListening {
         messageBox.getChildren().add(new Label("\n"));
 
 
-        PrintStream saida = new PrintStream(client.getOutputStream());
-        saida.println("chatMessage:" + messageField.getText());
-        messageField.clear();
+        if(server.chatMessage(messageField.getText()).equals(messageField.getText())) messageField.clear();
     }
 
     @FXML
-    private void askDraw() throws IOException {
-        PrintStream saida = new PrintStream(client.getOutputStream());
-        saida.println("drawGame:YES");
+    private void askDraw() throws Exception {
+        server.drawGame("YES");
     }
 
     @FXML
@@ -447,24 +475,7 @@ public class GameView extends ResizableView implements ContextListening {
     }
 
     @FXML
-    public void handleResponse(String message) throws IOException {
-        if (message.startsWith("getName:OK")) {
-            nameText.setText(message.substring(11));
-        }
-        if (message.startsWith("startRandomMatch:OK")) {
-            if (message.split(",").length > 1) {
-                if (message.split(",")[1].equals("wait")) {
-                    loadingLabel.setText(bundle.getString("game.waitingAnotherPLayer"));
-                } else {
-                    board.getChildren().add(chooseColorPanel);
-                    chooseColorPanel.setLayoutX(50);
-                    chooseColorPanel.setLayoutY(100);
-                    chooseColorPanel.setOpacity(1);
-                    loadingLabel.setText("");
-                }
-            }
-        }
-
+    public void handleResponse(String message) throws Exception {
         if (message.startsWith("startChooseMatch:OK,start")) {
             board.getChildren().add(chooseColorPanel);
             chooseColorPanel.setLayoutX(50);
@@ -473,9 +484,6 @@ public class GameView extends ResizableView implements ContextListening {
             loadingLabel.setText("");
         }
 
-        if (message.startsWith("startNewMatch:OK")) {
-            loadingLabel.setText(bundle.getString("game.waitingAnotherPLayer"));
-        }
         if (message.startsWith("chooseColor:OK")) {
             if (message.startsWith("chooseColor:OK,another,")) {
                 switch (message.substring(23)) {
@@ -502,30 +510,8 @@ public class GameView extends ResizableView implements ContextListening {
                 }
                 alterBallsPlayers("another", message.substring(23));
             } else if (message.startsWith("chooseColor:OK,yourself")) {
-                board.getChildren().remove(chooseColorPanel);
-                chooseColorPanel.setLayoutX(-500);
-                chooseColorPanel.setLayoutY(-1000);
-                chooseColorPanel.setOpacity(0);
-                board.getChildren().add(choosePlayer);
-                choosePlayer.setLayoutX(50);
-                choosePlayer.setLayoutY(100);
-                choosePlayer.setOpacity(1);
 
-                String playerColor = message.substring(24);
-                alterBallsPlayers("yourself", playerColor);
-                loadingLabel.setText("");
             }
-        }
-        if (message.startsWith("choosePlayer:OK")) {
-            this.playerTurn = message.substring(16);
-            loadingLabel.setText(bundle.getString("game.waitingPlayerChoose"));
-        }
-        if (message.startsWith("choosePlayer:ERROR")) {
-            this.playerTurn = message.substring(19);
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(bundle.getString("game.choosePlayerTitleError"));
-            alert.setContentText(bundle.getString("game.choosePlayerTextError"));
-            alert.show();
         }
         if (message.startsWith("begin:OK")) {
             board.getChildren().remove(choosePlayer);
@@ -695,14 +681,7 @@ public class GameView extends ResizableView implements ContextListening {
             alert.show();
         }
 
-        if (message.startsWith("cancelGame:OK")) {
-            this.goToMenu();
-        }
-
         if (message.startsWith("endGame:OK")) {
-            if (message.equals("endGame:OK,giveUp")) {
-                this.goToMenu();
-            }
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle(bundle.getString("game.endGame"));
@@ -759,11 +738,9 @@ public class GameView extends ResizableView implements ContextListening {
                 alert.setContentText(bundle.getString("game.drawTextAsk"));
                 Optional<ButtonType> result = alert.showAndWait();
                 if(result.isPresent() && result.get() == ButtonType.OK) {
-                    PrintStream saida = new PrintStream(client.getOutputStream());
-                    saida.println("drawGame:YES");
+                    server.drawGame("YES");
                 } else {
-                    PrintStream saida = new PrintStream(client.getOutputStream());
-                    saida.println("drawGame:NO");
+                    server.drawGame("NO");
                 }
             }
             if (message.startsWith("drawGame:OK,refused")) {

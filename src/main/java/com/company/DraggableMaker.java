@@ -1,4 +1,4 @@
-package com.example.tsoroyematatu;
+package com.company;
 
 import javafx.scene.Node;
 import javafx.scene.shape.Circle;

@@ -1,4 +1,4 @@
-package com.example.tsoroyematatu;
+package com.company;
 
 public interface ContextListening {
 

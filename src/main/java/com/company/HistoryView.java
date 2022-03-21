@@ -1,4 +1,4 @@
-package com.example.tsoroyematatu;
+package com.company;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -11,8 +11,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -41,17 +39,26 @@ public class HistoryView extends ResizableView implements ContextListening {
         initClient();
     }
 
-    ResourceBundle bundle = ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR"));
+    ResourceBundle bundle = ResourceBundle.getBundle("com.company.i18n", new Locale("pt_br", "pt_BR"));
 
     @FXML
     private void initClient(){
         try {
             Context context = Context.getInstance();
-            Socket client = context.getClient();
+            TsoroYematatuServerInterface server = context.getServer();
             context.addListening(this);
             connectionStatus.setText(bundle.getString("connectedOK"));
-            PrintStream saida = new PrintStream(client.getOutputStream());
-            saida.println("getHistory:");
+            try {
+                ArrayList<GameDescription> games = server.getHistory();
+                ArrayList<Game> gamesObject = new ArrayList<>();
+                for (GameDescription game: games) {
+                    gamesObject.add(new Game(game.getGame(), game.getResult(), "", ""));
+                }
+                tableGames.setItems(FXCollections.observableArrayList(gamesObject));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         } catch (IOException ex) {
             connectionStatus.setText(bundle.getString("connectedError"));
         }
@@ -63,15 +70,6 @@ public class HistoryView extends ResizableView implements ContextListening {
     }
 
     @FXML
-    public void handleResponse(String message) {
-        if (message.startsWith("getHistory:OK,")) {
-            String[] games = message.substring(14).split(",");
-            ArrayList<Game> gamesObject = new ArrayList<>();
-            for (String game: games) {
-                gamesObject.add(new Game(game.split("----->")[0], game.split("----->")[1], "", ""));
-            }
-            tableGames.setItems(FXCollections.observableArrayList(gamesObject));
-        }
-    }
+    public void handleResponse(String message) {}
 
 }

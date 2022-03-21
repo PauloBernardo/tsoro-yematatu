@@ -1,4 +1,4 @@
-package com.example.tsoroyematatu;
+package com.company;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -18,8 +18,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.PrintStream;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
@@ -40,9 +38,9 @@ public class ChooseGame extends ResizableView implements ContextListening {
     @FXML
     public AnchorPane anchorPane;
 
-    private Socket client;
+    private TsoroYematatuServerInterface server;
 
-    ResourceBundle bundle = ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR"));
+    ResourceBundle bundle = ResourceBundle.getBundle("com.company.i18n", new Locale("pt_br", "pt_BR"));
 
     @FXML
     public void initialize() {
@@ -72,11 +70,21 @@ public class ChooseGame extends ResizableView implements ContextListening {
     private void initClient(){
         try {
             Context context = Context.getInstance();
-            client = context.getClient();
+            server = context.getServer();
             context.addListening(this);
             connectionStatus.setText(bundle.getString("connectedOK"));
-            PrintStream saida = new PrintStream(client.getOutputStream());
-            saida.println("getChooseMatch:");
+
+            try {
+                ArrayList<GameDescription> games = server.getChooseMatch();
+                ArrayList<Game> gamesObject = new ArrayList<>();
+                for (GameDescription game: games) {
+                    gamesObject.add(new Game("", "", game.getPlayer(), game.getId()));
+                }
+                tableGames.setItems(FXCollections.observableArrayList(gamesObject));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         } catch (IOException ex) {
             connectionStatus.setText(bundle.getString("connectedError"));
         }
@@ -85,10 +93,22 @@ public class ChooseGame extends ResizableView implements ContextListening {
     @FXML
     public void handleTableClick(MouseEvent event) throws IOException {
         if (event.isPrimaryButtonDown() && event.getClickCount() == 1) {
-            PrintStream saida = new PrintStream(client.getOutputStream());
-            Game game = (Game)tableGames.getSelectionModel().getSelectedItem();
-            if (game != null) {
-                saida.println("startChooseMatch:" + game.getPlayer() + "#" + game.getId());
+            try {
+                if(server.startChooseMatch( ((Game)tableGames.getSelectionModel().getSelectedItem()).getId())) {
+                    Context.getInstance().removeListening(this);
+                    FXMLLoader fxmlLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("game-view.fxml")));
+                    fxmlLoader.setResources(ResourceBundle.getBundle("com.company.i18n", new Locale("pt_br", "pt_BR")));
+                    Parent rootMain = fxmlLoader.load();
+                    GameView controller = fxmlLoader.getController();
+                    controller.setType("choose");
+                    controller.setStage(stage);
+                    Stage stage = (Stage) anchorPane.getScene().getWindow();
+                    Scene scene = new Scene(rootMain);
+                    stage.setScene(scene);
+                    stage.show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -100,28 +120,6 @@ public class ChooseGame extends ResizableView implements ContextListening {
 
 
     @FXML
-    public void handleResponse(String message) throws IOException {
-        if (message.startsWith("getChooseMatch:OK,")) {
-            String games[] = message.substring(18).split(",");
-            ArrayList<Game> gamesObject = new ArrayList<>();
-            for (String game: games) {
-                gamesObject.add(new Game("", "", game.split("#")[0], game.split("#")[1]));
-            }
-            tableGames.setItems(FXCollections.observableArrayList(gamesObject));
-        }
-        if (message.startsWith("startChooseMatch:OK,start")) {
-            Context.getInstance().removeListening(this);
-            FXMLLoader fxmlLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("game-view.fxml")));
-            fxmlLoader.setResources(ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR")));
-            Parent rootMain = fxmlLoader.load();
-            GameView controller = fxmlLoader.getController();
-            controller.setType("choose");
-            controller.setStage(stage);
-            Stage stage = (Stage) anchorPane.getScene().getWindow();
-            Scene scene = new Scene(rootMain);
-            stage.setScene(scene);
-            stage.show();
-        }
-    }
+    public void handleResponse(String message) {}
 
 }

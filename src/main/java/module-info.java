@@ -9,7 +9,8 @@ module com.example.tsoroyematatu {
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
+    requires java.rmi;
 
-    opens com.example.tsoroyematatu to javafx.fxml;
-    exports com.example.tsoroyematatu;
+    opens com.company to javafx.fxml;
+    exports com.company;
 }

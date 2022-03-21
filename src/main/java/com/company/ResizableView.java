@@ -1,4 +1,4 @@
-package com.example.tsoroyematatu;
+package com.company;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -33,7 +33,7 @@ public class ResizableView implements ContextListening {
     public void switchBetweenScreen(Scene oldScene, String newScreen) throws IOException {
         Context.getInstance().removeListening(this);
         FXMLLoader fxmlLoader = new FXMLLoader(Objects.requireNonNull(getClass().getResource(newScreen)));
-        fxmlLoader.setResources(ResourceBundle.getBundle("com.example.tsoroyematatu.i18n", new Locale("pt_br", "pt_BR")));
+        fxmlLoader.setResources(ResourceBundle.getBundle("com.company.i18n", new Locale("pt_br", "pt_BR")));
         Parent rootMain = fxmlLoader.load();
         ResizableView controller = fxmlLoader.getController();
         Stage stage = (Stage) oldScene.getWindow();

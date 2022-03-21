@@ -9,7 +9,7 @@
 <?import javafx.scene.shape.Polygon?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchorPane" stylesheets="@aplication.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.tsoroyematatu.ConnectServer">
+<AnchorPane fx:id="anchorPane" stylesheets="@aplication.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.company.ConnectServer">
    <children>
       <HBox alignment="CENTER" layoutX="5.0" layoutY="110.0" prefHeight="196.0" prefWidth="591.0" AnchorPane.bottomAnchor="110.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="110.0">
          <children>
