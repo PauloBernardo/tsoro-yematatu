@@ -8,11 +8,12 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class ResizableView implements ContextListening {
+public class ResizableView implements TsoroYematatuClient {
     protected Stage stage;
 
     @FXML
@@ -44,5 +45,63 @@ public class ResizableView implements ContextListening {
     }
 
     @Override
-    public void handleResponse(String message) throws Exception {}
+    public void getName(String name) throws RemoteException {
+
+    }
+
+    @Override
+    public void startRandomMatch() throws RemoteException {
+
+    }
+
+    @Override
+    public void startChooseMatch() throws RemoteException {
+
+    }
+
+    @Override
+    public void cancelGame() throws RemoteException {
+
+    }
+
+    @Override
+    public void endGame(String status) throws Exception {
+
+    }
+
+    @Override
+    public void chooseColor(String color) throws Exception {
+
+    }
+
+    @Override
+    public void move(int older, int newer) throws Exception {
+
+    }
+
+    @Override
+    public void turn() throws RemoteException {
+
+    }
+
+    @Override
+    public void begin(String player) throws RemoteException {
+
+    }
+
+    @Override
+    public void choosePlayer(String color) throws Exception {
+
+    }
+
+    @Override
+    public void drawGame(String response) throws Exception {
+
+    }
+
+    @Override
+    public void chatMessage(String name, String message) throws RemoteException {
+
+    }
+
 }

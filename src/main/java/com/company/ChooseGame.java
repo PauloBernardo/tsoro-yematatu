@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class ChooseGame extends ResizableView implements ContextListening {
+public class ChooseGame extends ResizableView {
 
     @FXML
     public Label connectionStatus;
@@ -117,9 +117,5 @@ public class ChooseGame extends ResizableView implements ContextListening {
     public void switchToMenu(MouseEvent event) throws IOException {
         this.switchBetweenScreen(((Node) event.getSource()).getScene(), "menu-view.fxml");
     }
-
-
-    @FXML
-    public void handleResponse(String message) {}
 
 }

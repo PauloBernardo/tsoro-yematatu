@@ -25,6 +25,17 @@ public class TsoroYematatuApplication extends Application {
         stage.show();
     }
 
+    @Override
+    public void stop(){
+        System.out.println("Stage is closing");
+        try {
+            Context.getInstance().unregisterClient();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.exit(0);
+    }
+
     public static void main(String[] args) {
         Context.serverIp = args.length > 0  ? args[0] : "127.0.0.1";
         Context.serverPort = args.length > 1 ? Integer.parseInt(args[1]) : 5111;

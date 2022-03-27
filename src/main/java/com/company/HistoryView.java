@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class HistoryView extends ResizableView implements ContextListening {
+public class HistoryView extends ResizableView {
 
     @FXML
     public Label connectionStatus;
@@ -68,8 +68,5 @@ public class HistoryView extends ResizableView implements ContextListening {
     public void switchToMenu(MouseEvent event) throws IOException {
         this.switchBetweenScreen(((Node) event.getSource()).getScene(), "menu-view.fxml");
     }
-
-    @FXML
-    public void handleResponse(String message) {}
 
 }

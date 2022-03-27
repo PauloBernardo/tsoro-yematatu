@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class ConnectServer extends ResizableView implements ContextListening {
+public class ConnectServer extends ResizableView {
 
     @FXML
     public Label connectionStatus;
@@ -43,11 +43,6 @@ public class ConnectServer extends ResizableView implements ContextListening {
         } catch (IOException ex) {
             connectionStatus.setText(bundle.getString("connectError"));
         }
-    }
-
-    @FXML
-    public void handleResponse(String message) {
-
     }
 
     @FXML

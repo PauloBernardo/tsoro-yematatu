@@ -1,5 +1,7 @@
 package com.company;
 
+import javafx.application.Platform;
+
 import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -14,12 +16,10 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
     private static Context instance = null;
     private String path;
     private TsoroYematatuServerInterface server;
-    private final ArrayList<String> buffer;
-    private final ArrayList<ContextListening> listeners;
+    private final ArrayList<TsoroYematatuClient> listeners;
 
     private Context() throws RemoteException {
         super();
-        buffer = new ArrayList<>();
         listeners = new ArrayList<>();
     }
 
@@ -63,11 +63,11 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
         return server;
     }
 
-    public void addListening(ContextListening contextListening) {
+    public void addListening(TsoroYematatuClient contextListening) {
         listeners.add(contextListening);
     }
 
-    public void removeListening(ContextListening contextListening) {
+    public void removeListening(TsoroYematatuClient contextListening) {
         listeners.remove(contextListening);
     }
 
@@ -77,58 +77,154 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
     }
 
     @Override
-    public void startRandomMatch() {
-
+    public void startRandomMatch() throws RemoteException {
+        for(TsoroYematatuClient listener: listeners) {
+            Platform.runLater(() -> {
+                try {
+                    listener.startRandomMatch();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override
-    public void startChooseMatch() {
-
+    public void startChooseMatch() throws RemoteException {
+        for(TsoroYematatuClient listener: listeners) {
+            Platform.runLater(() -> {
+                try {
+                    listener.startChooseMatch();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override
-    public void cancelGame() {
-
+    public void cancelGame() throws RemoteException {
+        for(TsoroYematatuClient listener: listeners) {
+            Platform.runLater(() -> {
+                try {
+                    listener.cancelGame();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override
-    public void endGame(String status) {
-
+    public void endGame(String status) throws Exception {
+        for(TsoroYematatuClient listener: listeners) {
+            Platform.runLater(() -> {
+                try {
+                    listener.endGame(status);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override
     public void chooseColor(String color) throws Exception {
-
+        for(TsoroYematatuClient listener: listeners) {
+            Platform.runLater(() -> {
+                try {
+                    listener.chooseColor(color);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override
     public void move(int older, int newer) throws Exception {
-
+        for(TsoroYematatuClient listener: listeners) {
+            Platform.runLater(() -> {
+                try {
+                    listener.move(older, newer);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override
-    public void turn() {
-
+    public void turn() throws RemoteException {
+        for(TsoroYematatuClient listener: listeners) {
+            Platform.runLater(() -> {
+                try {
+                    listener.turn();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override
-    public void begin(String player) {
-
+    public void begin(String player) throws RemoteException {
+        for(TsoroYematatuClient listener: listeners) {
+            Platform.runLater(() -> {
+                try {
+                    listener.begin(player);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override
     public void choosePlayer(String color) throws Exception {
-
+        for(TsoroYematatuClient listener: listeners) {
+            Platform.runLater(() -> {
+                try {
+                    listener.drawGame(color);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override
-    public void drawGame(String response) {
-
+    public void drawGame(String response) throws Exception {
+        for(TsoroYematatuClient listener: listeners) {
+            Platform.runLater(() -> {
+                try {
+                    listener.drawGame(response);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override
-    public void chatMessage(String name, String message) {
+    public void chatMessage(String name, String message) throws RemoteException {
+        for(TsoroYematatuClient listener: listeners) {
+            Platform.runLater(() -> {
+                try {
+                    listener.chatMessage(name, message);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
 
+    public void unregisterClient() throws Exception {
+        if (this.server != null) {
+            this.server.unregister(this.path);
+            Registry registry = LocateRegistry.getRegistry(0);
+            registry.unbind(this.path);
+        }
     }
 
     public String getPath() {

@@ -15,12 +15,12 @@ import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import java.io.IOException;
-import java.io.PrintStream;
+import java.rmi.RemoteException;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class GameView extends ResizableView implements ContextListening {
+public class GameView extends ResizableView {
 
     @FXML
     public Label connectionStatus;
@@ -111,7 +111,6 @@ public class GameView extends ResizableView implements ContextListening {
 
     private final DraggableMaker draggableMaker = new DraggableMaker(this);
 
-    private PrintStream output = null;
     private boolean ignoreClick = false;
 
     private double previousPositionX;
@@ -230,24 +229,40 @@ public class GameView extends ResizableView implements ContextListening {
         this.previousPositionX = startX;
         this.previousPositionY = startY;
 
-        if (Math.abs(posX - gameBall0.getLayoutX()) < 20 && Math.abs(posY - gameBall0.getLayoutY()) < 20 && playerPosition != 0) {
-            output.println("move:" + playerPosition + "," + gameBall0.getId().substring(8));
-        } else if (Math.abs(posX - gameBall1.getLayoutX()) < 20 && Math.abs(posY - gameBall1.getLayoutY()) < 20 && playerPosition != 1) {
-            output.println("move:" + playerPosition + "," + gameBall1.getId().substring(8));
-        } else if (Math.abs(posX - gameBall2.getLayoutX()) < 20 && Math.abs(posY - gameBall2.getLayoutY()) < 20 && playerPosition != 2) {
-            output.println("move:" + playerPosition + "," + gameBall2.getId().substring(8));
-        } else if (Math.abs(posX - gameBall3.getLayoutX()) < 20 && Math.abs(posY - gameBall3.getLayoutY()) < 20 && playerPosition != 3) {
-            output.println("move:" + playerPosition + "," + gameBall3.getId().substring(8));
-        } else if (Math.abs(posX - gameBall4.getLayoutX()) < 20 && Math.abs(posY - gameBall4.getLayoutY()) < 20 && playerPosition != 4) {
-            output.println("move:" + playerPosition + "," + gameBall4.getId().substring(8));
-        } else if (Math.abs(posX - gameBall5.getLayoutX()) < 20 && Math.abs(posY - gameBall5.getLayoutY()) < 20 && playerPosition != 5) {
-            output.println("move:" + playerPosition + "," + gameBall5.getId().substring(8));
-        } else if (Math.abs(posX - gameBall6.getLayoutX()) < 20 && Math.abs(posY - gameBall6.getLayoutY()) < 20 && playerPosition != 6) {
-            output.println("move:" + playerPosition + "," + gameBall6.getId().substring(8));
-        }
-        else {
-            node.setTranslateX(startX);
-            node.setTranslateY(startY);
+        try {
+            int newer = 0;
+            if (Math.abs(posX - gameBall0.getLayoutX()) < 20 && Math.abs(posY - gameBall0.getLayoutY()) < 20 && playerPosition != 0) {
+                newer = Integer.parseInt(gameBall0.getId().substring(8));
+            } else if (Math.abs(posX - gameBall1.getLayoutX()) < 20 && Math.abs(posY - gameBall1.getLayoutY()) < 20 && playerPosition != 1) {
+                newer = Integer.parseInt(gameBall1.getId().substring(8));
+            } else if (Math.abs(posX - gameBall2.getLayoutX()) < 20 && Math.abs(posY - gameBall2.getLayoutY()) < 20 && playerPosition != 2) {
+                newer = Integer.parseInt(gameBall2.getId().substring(8));
+            } else if (Math.abs(posX - gameBall3.getLayoutX()) < 20 && Math.abs(posY - gameBall3.getLayoutY()) < 20 && playerPosition != 3) {
+                newer = Integer.parseInt(gameBall3.getId().substring(8));
+            } else if (Math.abs(posX - gameBall4.getLayoutX()) < 20 && Math.abs(posY - gameBall4.getLayoutY()) < 20 && playerPosition != 4) {
+                newer = Integer.parseInt(gameBall4.getId().substring(8));
+            } else if (Math.abs(posX - gameBall5.getLayoutX()) < 20 && Math.abs(posY - gameBall5.getLayoutY()) < 20 && playerPosition != 5) {
+                newer = Integer.parseInt(gameBall5.getId().substring(8));
+            } else if (Math.abs(posX - gameBall6.getLayoutX()) < 20 && Math.abs(posY - gameBall6.getLayoutY()) < 20 && playerPosition != 6) {
+                newer = Integer.parseInt(gameBall6.getId().substring(8));
+            }
+            else {
+                node.setTranslateX(startX);
+                node.setTranslateY(startY);
+                return;
+            }
+
+            server.move(Context.getInstance().getPath(), playerPosition, newer);
+            this.movePlayerBalls(newer);
+
+        } catch (Exception e) {
+            this.ignoreClick = false;
+            this.selectedPlayerBall.setTranslateX(previousPositionX);
+            this.selectedPlayerBall.setTranslateY(previousPositionY);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(bundle.getString("game.moveErrorTitle"));
+            alert.setContentText(e.getMessage());
+            alert.show();
         }
 
     }
@@ -310,7 +325,15 @@ public class GameView extends ResizableView implements ContextListening {
                 this.playerTurn = playerValue;
                 loadingLabel.setText(bundle.getString("game.waitingPlayerChoose"));
             } else {
-
+                if(playerValue.equals("player1")) {
+                    this.playerTurn = "player2";
+                } else {
+                    this.playerTurn = "player1";
+                }
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(bundle.getString("game.choosePlayerTitleError"));
+                alert.setContentText(bundle.getString("game.choosePlayerTextError"));
+                alert.show();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -386,7 +409,19 @@ public class GameView extends ResizableView implements ContextListening {
     public void handleClickBoardBall(MouseEvent event) {
         Circle circle = ((Circle)event.getSource());
         if (circle.getStyleClass().toString().contains("emptyBoardBall") && selectedPlayerBall != null) {
-            output.println("move:" + getPlayerBallPosition(selectedPlayerBall) + "," + circle.getId().substring(8));
+            try {
+                int newer = Integer.parseInt(circle.getId().substring(8));
+                server.move(Context.getInstance().getPath(), getPlayerBallPosition(selectedPlayerBall), newer);
+                this.movePlayerBalls(newer);
+            } catch (Exception e) {
+                this.ignoreClick = false;
+                this.selectedPlayerBall.setTranslateX(previousPositionX);
+                this.selectedPlayerBall.setTranslateY(previousPositionY);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle(bundle.getString("game.moveErrorTitle"));
+                alert.setContentText(e.getMessage());
+                alert.show();
+            }
         }
     }
 
@@ -475,281 +510,297 @@ public class GameView extends ResizableView implements ContextListening {
     }
 
     @FXML
-    public void handleResponse(String message) throws Exception {
-        if (message.startsWith("startChooseMatch:OK,start")) {
-            board.getChildren().add(chooseColorPanel);
-            chooseColorPanel.setLayoutX(50);
-            chooseColorPanel.setLayoutY(100);
-            chooseColorPanel.setOpacity(1);
-            loadingLabel.setText("");
+    private void movePlayerBalls(int newer) {
+        selectedPlayerBall.getStyleClass().remove("gameBallsSelected");
+        selectedPlayerBall.getStyleClass().add("gameBalls");
+        removeActiveBalls();
+
+        if (selectedPlayerBall == playerBall1) {
+            playerBall1Position = newer;
         }
 
-        if (message.startsWith("chooseColor:OK")) {
-            if (message.startsWith("chooseColor:OK,another,")) {
-                switch (message.substring(23)) {
-                    case "blackColor":
-                        blackColor.getStyleClass().remove("colorBalls");
-                        blackColor.getStyleClass().add("colorBallsBlocked");
-                        break;
-                    case "redColor":
-                        redColor.getStyleClass().remove("colorBalls");
-                        redColor.getStyleClass().add("colorBallsBlocked");
-                        break;
-                    case "greenColor":
-                        greenColor.getStyleClass().remove("colorBalls");
-                        greenColor.getStyleClass().add("colorBallsBlocked");
-                        break;
-                    case "yellowColor":
-                        yellowColor.getStyleClass().remove("colorBalls");
-                        yellowColor.getStyleClass().add("colorBallsBlocked");
-                        break;
-                    case "blueColor":
-                        blueColor.getStyleClass().remove("colorBalls");
-                        blueColor.getStyleClass().add("colorBallsBlocked");
-                        break;
-                }
-                alterBallsPlayers("another", message.substring(23));
-            } else if (message.startsWith("chooseColor:OK,yourself")) {
-
-            }
-        }
-        if (message.startsWith("begin:OK")) {
-            board.getChildren().remove(choosePlayer);
-            choosePlayer.setLayoutX(-500);
-            choosePlayer.setLayoutY(-1000);
-            choosePlayer.setOpacity(0);
-            board.getChildren().add(gamePanel);
-            gamePanel.setLayoutX(20);
-            gamePanel.setLayoutY(20);
-            gamePanel.setOpacity(1);
-            playerBallsPanel.getChildren().remove(playerBall1);
-            playerBallsPanel.getChildren().remove(playerBall2);
-            playerBallsPanel.getChildren().remove(playerBall3);
-            gamePanel.getChildren().add(playerBall1);
-            gamePanel.getChildren().add(playerBall2);
-            gamePanel.getChildren().add(playerBall3);
-            playerBall1.setLayoutX(650);
-            playerBall1.setLayoutY(20);
-            playerBall2.setLayoutX(650);
-            playerBall2.setLayoutY(80);
-            playerBall3.setLayoutX(650);
-            playerBall3.setLayoutY(140);
-            draggableMaker.makeDraggable(playerBall1);
-            draggableMaker.makeDraggable(playerBall2);
-            draggableMaker.makeDraggable(playerBall3);
-
-            gamePanel.getChildren().add(anotherBall1);
-            gamePanel.getChildren().add(anotherBall2);
-            gamePanel.getChildren().add(anotherBall3);
-            anotherBall1.setLayoutX(650);
-            anotherBall1.setLayoutY(260);
-            anotherBall2.setLayoutX(650);
-            anotherBall2.setLayoutY(320);
-            anotherBall3.setLayoutX(650);
-            anotherBall3.setLayoutY(380);
-
-            loadingLabel.setText("");
-            sendButton.setDisable(false);
-            buttonDraw.setDisable(false);
-        }
-        if (message.startsWith("turn:OK")) {
-            this.actualPlayTurn = message.substring(8);
-            if (this.actualPlayTurn.equals(this.playerTurn)) {
-                if (playerBall1.getParent() != gamePanel || (playerBall2.getParent() == gamePanel && playerBall3.getParent() == gamePanel))
-                    playerBall1.getStyleClass().remove("gameBallsDisabled");
-                if (playerBall2.getParent() != gamePanel || (playerBall1.getParent() == gamePanel && playerBall3.getParent() == gamePanel))
-                    playerBall2.getStyleClass().remove("gameBallsDisabled");
-                if (playerBall3.getParent() != gamePanel || (playerBall1.getParent() == gamePanel && playerBall2.getParent() == gamePanel))
-                    playerBall3.getStyleClass().remove("gameBallsDisabled");
-                turnLabel.setText(bundle.getString("game.yourTurn"));
-            } else {
-                playerBall1.getStyleClass().add("gameBallsDisabled");
-                playerBall2.getStyleClass().add("gameBallsDisabled");
-                playerBall3.getStyleClass().add("gameBallsDisabled");
-                turnLabel.setText(message.substring(8));
-                turnLabel.setText(bundle.getString("game.waitingAnotherPLayer"));
-            }
-        }
-        if (message.startsWith("move:OK")) {
-            this.ignoreClick = false;
-            String playerString = message.split(":")[1].split(",")[1];
-            int older = Integer.parseInt(message.split(":")[1].split(",")[2]);
-            int newer = Integer.parseInt(message.split(":")[1].split(",")[3]);
-            if (playerString.equals(this.playerTurn)) {
-                selectedPlayerBall.getStyleClass().remove("gameBallsSelected");
-                selectedPlayerBall.getStyleClass().add("gameBalls");
-                removeActiveBalls();
-
-                if (selectedPlayerBall == playerBall1) {
-                    playerBall1Position = newer;
-                }
-
-                if (selectedPlayerBall == playerBall2) {
-                    playerBall2Position = newer;
-                }
-
-                if (selectedPlayerBall == playerBall3) {
-                    playerBall3Position = newer;
-                }
-
-                switch (newer) {
-                    case 0:
-                        translateTransitionBall(selectedPlayerBall, gameBall0.getLayoutX(), gameBall0.getLayoutY());
-                        break;
-                    case 1:
-                        translateTransitionBall(selectedPlayerBall, gameBall1.getLayoutX(), gameBall1.getLayoutY());
-                        break;
-                    case 2:
-                        translateTransitionBall(selectedPlayerBall, gameBall2.getLayoutX(), gameBall2.getLayoutY());
-                        break;
-                    case 3:
-                        translateTransitionBall(selectedPlayerBall, gameBall3.getLayoutX(), gameBall3.getLayoutY());
-                        break;
-                    case 4:
-                        translateTransitionBall(selectedPlayerBall, gameBall4.getLayoutX(), gameBall4.getLayoutY());
-                        break;
-                    case 5:
-                        translateTransitionBall(selectedPlayerBall, gameBall5.getLayoutX(), gameBall5.getLayoutY());
-                        break;
-                    case 6:
-                        translateTransitionBall(selectedPlayerBall, gameBall6.getLayoutX(), gameBall6.getLayoutY());
-                        break;
-                }
-
-                this.selectedPlayerBall = null;
-                this.removeActiveBalls();
-            } else {
-                Circle selected;
-                if (older == -1) {
-                    if (anotherBall1Position == -1) {
-                        selected = anotherBall1;
-                        anotherBall1Position = newer;
-                    }
-                    else if (anotherBall2Position == -1) {
-                        selected = anotherBall2;
-                        anotherBall2Position = newer;
-                    }
-                    else {
-                        selected = anotherBall3;
-                    }
-                } else {
-                    if (older == anotherBall1Position) {
-                        selected = anotherBall1;
-                        anotherBall1Position = newer;
-                    }
-                    else if (older == anotherBall2Position) {
-                        selected = anotherBall2;
-                        anotherBall2Position = newer;
-                    }
-                    else {
-                        selected = anotherBall3;
-                    }
-                }
-
-                switch (newer) {
-                    case 0:
-                        translateTransitionBall(selected, gameBall0.getLayoutX(), gameBall0.getLayoutY());
-                        break;
-                    case 1:
-                        translateTransitionBall(selected, gameBall1.getLayoutX(), gameBall1.getLayoutY());
-                        break;
-                    case 2:
-                        translateTransitionBall(selected, gameBall2.getLayoutX(), gameBall2.getLayoutY());
-                        break;
-                    case 3:
-                        translateTransitionBall(selected, gameBall3.getLayoutX(), gameBall3.getLayoutY());
-                        break;
-                    case 4:
-                        translateTransitionBall(selected, gameBall4.getLayoutX(), gameBall4.getLayoutY());
-                        break;
-                    case 5:
-                        translateTransitionBall(selected, gameBall5.getLayoutX(), gameBall5.getLayoutY());
-                        break;
-                    case 6:
-                        translateTransitionBall(selected, gameBall6.getLayoutX(), gameBall6.getLayoutY());
-                        break;
-                }
-            }
-        }
-        if (message.startsWith("move:ERROR")) {
-            this.ignoreClick = false;
-            this.selectedPlayerBall.setTranslateX(previousPositionX);
-            this.selectedPlayerBall.setTranslateY(previousPositionY);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Choose Player");
-            alert.setContentText(message.substring(11));
-            alert.show();
+        if (selectedPlayerBall == playerBall2) {
+            playerBall2Position = newer;
         }
 
-        if (message.startsWith("endGame:OK")) {
+        if (selectedPlayerBall == playerBall3) {
+            playerBall3Position = newer;
+        }
 
+        switch (newer) {
+            case 0:
+                translateTransitionBall(selectedPlayerBall, gameBall0.getLayoutX(), gameBall0.getLayoutY());
+                break;
+            case 1:
+                translateTransitionBall(selectedPlayerBall, gameBall1.getLayoutX(), gameBall1.getLayoutY());
+                break;
+            case 2:
+                translateTransitionBall(selectedPlayerBall, gameBall2.getLayoutX(), gameBall2.getLayoutY());
+                break;
+            case 3:
+                translateTransitionBall(selectedPlayerBall, gameBall3.getLayoutX(), gameBall3.getLayoutY());
+                break;
+            case 4:
+                translateTransitionBall(selectedPlayerBall, gameBall4.getLayoutX(), gameBall4.getLayoutY());
+                break;
+            case 5:
+                translateTransitionBall(selectedPlayerBall, gameBall5.getLayoutX(), gameBall5.getLayoutY());
+                break;
+            case 6:
+                translateTransitionBall(selectedPlayerBall, gameBall6.getLayoutX(), gameBall6.getLayoutY());
+                break;
+        }
+
+        this.selectedPlayerBall = null;
+        this.removeActiveBalls();
+        playerBall1.getStyleClass().add("gameBallsDisabled");
+        playerBall2.getStyleClass().add("gameBallsDisabled");
+        playerBall3.getStyleClass().add("gameBallsDisabled");
+        turnLabel.setText(bundle.getString("game.waitingAnotherPLayer"));
+    }
+
+    @FXML
+    @Override
+    public void chatMessage(String name, String message) throws RemoteException {
+        HBox hBox = new HBox();
+        hBox.setMinWidth(290);
+        hBox.setMaxWidth(290);
+        //Creating a Label
+        Label label = new Label(name);
+        hBox.setAlignment(Pos.CENTER_RIGHT);
+        //Setting font to the label
+        label.getStyleClass().add("namePlayerLabel");
+        hBox.getChildren().add(label);
+        messageBox.getChildren().add(hBox);
+
+
+        HBox hBox1 = new HBox();
+        hBox1.setMinWidth(290);
+        hBox1.setMaxWidth(290);
+        //Creating a Label
+        Label label1 = new Label(message);
+        label1.getStyleClass().add("messageAnotherLabel");
+        //Setting the position
+        hBox1.getChildren().add(label1);
+        hBox1.setAlignment(Pos.CENTER_RIGHT);
+        messageBox.getChildren().add(hBox1);
+        messageBox.getChildren().add(new Label("\n"));
+        messageField.clear();
+    }
+
+
+    @FXML
+    @Override
+    public void drawGame(String response) throws Exception {
+        if (response.equals("draw")) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle(bundle.getString("game.endGame"));
-            alert.setContentText(message.substring(11).toUpperCase());
+            alert.setContentText("Empate!");
             Optional<ButtonType> result = alert.showAndWait();
             if(result.isEmpty() || result.get() == ButtonType.OK) {
                 this.goToMenu();
             }
         }
-
-        if (message.startsWith("chatMessage:OK")) {
-            String player = message.split(":")[1].split(",")[1];
-            String remoteMessage = message.split(":")[1].split(",")[2];
-
-            HBox hBox = new HBox();
-            hBox.setMinWidth(290);
-            hBox.setMaxWidth(290);
-            //Creating a Label
-            Label label = new Label(player);
-            hBox.setAlignment(Pos.CENTER_RIGHT);
-            //Setting font to the label
-            label.getStyleClass().add("namePlayerLabel");
-            hBox.getChildren().add(label);
-            messageBox.getChildren().add(hBox);
-
-
-            HBox hBox1 = new HBox();
-            hBox1.setMinWidth(290);
-            hBox1.setMaxWidth(290);
-            //Creating a Label
-            Label label1 = new Label(remoteMessage);
-            label1.getStyleClass().add("messageAnotherLabel");
-            //Setting the position
-            hBox1.getChildren().add(label1);
-            hBox1.setAlignment(Pos.CENTER_RIGHT);
-            messageBox.getChildren().add(hBox1);
-            messageBox.getChildren().add(new Label("\n"));
-            messageField.clear();
+        if (response.equals("ask")) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(bundle.getString("game.drawTitleAsk"));
+            alert.setContentText(bundle.getString("game.drawTextAsk"));
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.isPresent() && result.get() == ButtonType.OK) {
+                server.drawGame(Context.getInstance().getPath(), "YES");
+            } else {
+                server.drawGame(Context.getInstance().getPath(), "NO");
+            }
         }
-
-        if (message.startsWith("drawGame:")) {
-            if (message.startsWith("drawGame:OK,draw")) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(bundle.getString("game.endGame"));
-                alert.setContentText(message.substring(12).toUpperCase());
-                Optional<ButtonType> result = alert.showAndWait();
-                if(result.isEmpty() || result.get() == ButtonType.OK) {
-                    this.goToMenu();
-                }
-            }
-            if (message.startsWith("drawGame:OK,ask")) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle(bundle.getString("game.drawTitleAsk"));
-                alert.setContentText(bundle.getString("game.drawTextAsk"));
-                Optional<ButtonType> result = alert.showAndWait();
-                if(result.isPresent() && result.get() == ButtonType.OK) {
-                    server.drawGame(Context.getInstance().getPath(), "YES");
-                } else {
-                    server.drawGame(Context.getInstance().getPath(), "NO");
-                }
-            }
-            if (message.startsWith("drawGame:OK,refused")) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(bundle.getString("game.drawTitleError"));
-                alert.setContentText(bundle.getString("game.drawTextError"));
-                alert.show();
-            }
+        if (response.equals("refused")) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle(bundle.getString("game.drawTitleError"));
+            alert.setContentText(bundle.getString("game.drawTextError"));
+            alert.show();
         }
     }
 
+    @FXML
+    @Override
+    public void move(int older, int newer) {
+        Circle selected;
+        if (older == -1) {
+            if (anotherBall1Position == -1) {
+                selected = anotherBall1;
+                anotherBall1Position = newer;
+            }
+            else if (anotherBall2Position == -1) {
+                selected = anotherBall2;
+                anotherBall2Position = newer;
+            }
+            else {
+                selected = anotherBall3;
+            }
+        } else {
+            if (older == anotherBall1Position) {
+                selected = anotherBall1;
+                anotherBall1Position = newer;
+            }
+            else if (older == anotherBall2Position) {
+                selected = anotherBall2;
+                anotherBall2Position = newer;
+            }
+            else {
+                selected = anotherBall3;
+            }
+        }
+
+        switch (newer) {
+            case 0:
+                translateTransitionBall(selected, gameBall0.getLayoutX(), gameBall0.getLayoutY());
+                break;
+            case 1:
+                translateTransitionBall(selected, gameBall1.getLayoutX(), gameBall1.getLayoutY());
+                break;
+            case 2:
+                translateTransitionBall(selected, gameBall2.getLayoutX(), gameBall2.getLayoutY());
+                break;
+            case 3:
+                translateTransitionBall(selected, gameBall3.getLayoutX(), gameBall3.getLayoutY());
+                break;
+            case 4:
+                translateTransitionBall(selected, gameBall4.getLayoutX(), gameBall4.getLayoutY());
+                break;
+            case 5:
+                translateTransitionBall(selected, gameBall5.getLayoutX(), gameBall5.getLayoutY());
+                break;
+            case 6:
+                translateTransitionBall(selected, gameBall6.getLayoutX(), gameBall6.getLayoutY());
+                break;
+        }
+    }
+
+    @FXML
+    @Override
+    public void endGame(String status) throws Exception {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(bundle.getString("game.endGame"));
+        alert.setContentText(status.toUpperCase());
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.isEmpty() || result.get() == ButtonType.OK) {
+            this.goToMenu();
+        }
+    }
+
+    @FXML
+    @Override
+    public void turn() throws RemoteException {
+        if (playerBall1.getParent() != gamePanel || (playerBall2.getParent() == gamePanel && playerBall3.getParent() == gamePanel))
+            playerBall1.getStyleClass().remove("gameBallsDisabled");
+        if (playerBall2.getParent() != gamePanel || (playerBall1.getParent() == gamePanel && playerBall3.getParent() == gamePanel))
+            playerBall2.getStyleClass().remove("gameBallsDisabled");
+        if (playerBall3.getParent() != gamePanel || (playerBall1.getParent() == gamePanel && playerBall2.getParent() == gamePanel))
+            playerBall3.getStyleClass().remove("gameBallsDisabled");
+        turnLabel.setText(bundle.getString("game.yourTurn"));
+    }
+
+    @FXML
+    @Override
+    public void begin(String player) {
+        board.getChildren().remove(choosePlayer);
+        choosePlayer.setLayoutX(-500);
+        choosePlayer.setLayoutY(-1000);
+        choosePlayer.setOpacity(0);
+        board.getChildren().add(gamePanel);
+        gamePanel.setLayoutX(20);
+        gamePanel.setLayoutY(20);
+        gamePanel.setOpacity(1);
+        playerBallsPanel.getChildren().remove(playerBall1);
+        playerBallsPanel.getChildren().remove(playerBall2);
+        playerBallsPanel.getChildren().remove(playerBall3);
+        gamePanel.getChildren().add(playerBall1);
+        gamePanel.getChildren().add(playerBall2);
+        gamePanel.getChildren().add(playerBall3);
+        playerBall1.setLayoutX(650);
+        playerBall1.setLayoutY(20);
+        playerBall2.setLayoutX(650);
+        playerBall2.setLayoutY(80);
+        playerBall3.setLayoutX(650);
+        playerBall3.setLayoutY(140);
+        draggableMaker.makeDraggable(playerBall1);
+        draggableMaker.makeDraggable(playerBall2);
+        draggableMaker.makeDraggable(playerBall3);
+
+        gamePanel.getChildren().add(anotherBall1);
+        gamePanel.getChildren().add(anotherBall2);
+        gamePanel.getChildren().add(anotherBall3);
+        anotherBall1.setLayoutX(650);
+        anotherBall1.setLayoutY(260);
+        anotherBall2.setLayoutX(650);
+        anotherBall2.setLayoutY(320);
+        anotherBall3.setLayoutX(650);
+        anotherBall3.setLayoutY(380);
+
+        loadingLabel.setText("");
+        sendButton.setDisable(false);
+        buttonDraw.setDisable(false);
+
+        if (player.equals("player1")) {
+            if (playerBall1.getParent() != gamePanel || (playerBall2.getParent() == gamePanel && playerBall3.getParent() == gamePanel))
+                playerBall1.getStyleClass().remove("gameBallsDisabled");
+            if (playerBall2.getParent() != gamePanel || (playerBall1.getParent() == gamePanel && playerBall3.getParent() == gamePanel))
+                playerBall2.getStyleClass().remove("gameBallsDisabled");
+            if (playerBall3.getParent() != gamePanel || (playerBall1.getParent() == gamePanel && playerBall2.getParent() == gamePanel))
+                playerBall3.getStyleClass().remove("gameBallsDisabled");
+            turnLabel.setText(bundle.getString("game.yourTurn"));
+        } else {
+            playerBall1.getStyleClass().add("gameBallsDisabled");
+            playerBall2.getStyleClass().add("gameBallsDisabled");
+            playerBall3.getStyleClass().add("gameBallsDisabled");
+            turnLabel.setText(bundle.getString("game.waitingAnotherPLayer"));
+        }
+    }
+
+    @FXML
+    @Override
+    public void chooseColor(String color) {
+        switch (color) {
+            case "blackColor":
+                blackColor.getStyleClass().remove("colorBalls");
+                blackColor.getStyleClass().add("colorBallsBlocked");
+                break;
+            case "redColor":
+                redColor.getStyleClass().remove("colorBalls");
+                redColor.getStyleClass().add("colorBallsBlocked");
+                break;
+            case "greenColor":
+                greenColor.getStyleClass().remove("colorBalls");
+                greenColor.getStyleClass().add("colorBallsBlocked");
+                break;
+            case "yellowColor":
+                yellowColor.getStyleClass().remove("colorBalls");
+                yellowColor.getStyleClass().add("colorBallsBlocked");
+                break;
+            case "blueColor":
+                blueColor.getStyleClass().remove("colorBalls");
+                blueColor.getStyleClass().add("colorBallsBlocked");
+                break;
+        }
+        alterBallsPlayers("another", color);
+    }
+
+    @FXML
+    @Override
+    public void startChooseMatch() throws RemoteException {
+        board.getChildren().add(chooseColorPanel);
+        chooseColorPanel.setLayoutX(50);
+        chooseColorPanel.setLayoutY(100);
+        chooseColorPanel.setOpacity(1);
+        loadingLabel.setText("");
+    }
+
+    @FXML
+    @Override
+    public void startRandomMatch() throws RemoteException {
+        board.getChildren().add(chooseColorPanel);
+        chooseColorPanel.setLayoutX(50);
+        chooseColorPanel.setLayoutY(100);
+        chooseColorPanel.setOpacity(1);
+        loadingLabel.setText("");
+    }
 }
