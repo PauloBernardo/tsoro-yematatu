@@ -37,8 +37,7 @@ public class TsoroYematatuApplication extends Application {
     }
 
     public static void main(String[] args) {
-        Context.serverIp = args.length > 0  ? args[0] : "127.0.0.1";
-        Context.serverPort = args.length > 1 ? Integer.parseInt(args[1]) : 5111;
+        Context.serverUrl = args.length > 0 ? args[0] : "rmi://localhost:5431/";
         launch();
     }
 }

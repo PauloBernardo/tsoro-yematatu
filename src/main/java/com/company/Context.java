@@ -3,16 +3,14 @@ package com.company;
 import javafx.application.Platform;
 
 import java.io.IOException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 public class Context extends UnicastRemoteObject implements TsoroYematatuClient {
-    public static String serverIp;
-    public static Integer serverPort;
+    public static String serverUrl;
     private static Context instance = null;
     private String path;
     private TsoroYematatuServerInterface server;
@@ -27,14 +25,13 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
         if (instance == null) {
             try {
                 instance = new Context();
-                Registry registry = LocateRegistry.getRegistry(0);
                 int clientNumber = 1;
                 while(true) {
                     try {
-                        registry.bind("tsoro-yematatu-client-" + clientNumber, instance);
-                        instance.path = "tsoro-yematatu-client-" + clientNumber;
+                        Naming.bind(serverUrl + "tsoro-yematatu-client-" + clientNumber, instance);
+                        instance.path = serverUrl + "tsoro-yematatu-client-" + clientNumber;
                         break;
-                    } catch (Exception e) {
+                    } catch (AlreadyBoundException e) {
                         System.out.println("Probably the clientNumber " + clientNumber + " is on.");
                         clientNumber++;
                     }
@@ -50,7 +47,7 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
     public TsoroYematatuServerInterface getServer() {
         if (server == null) {
             try {
-                server = (TsoroYematatuServerInterface) Naming.lookup("tsoro-yematatu-server");
+                server = (TsoroYematatuServerInterface) Naming.lookup(serverUrl + "tsoro-yematatu-server");
                 try {
                     server.registry(this.path, this.path);
                 } catch (Exception e) {
@@ -116,7 +113,7 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
     }
 
     @Override
-    public void endGame(String status) throws Exception {
+    public void endGame(String status) {
         for(TsoroYematatuClient listener: listeners) {
             Platform.runLater(() -> {
                 try {
@@ -129,7 +126,7 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
     }
 
     @Override
-    public void chooseColor(String color) throws Exception {
+    public void chooseColor(String color) {
         for(TsoroYematatuClient listener: listeners) {
             Platform.runLater(() -> {
                 try {
@@ -142,7 +139,7 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
     }
 
     @Override
-    public void move(int older, int newer) throws Exception {
+    public void move(int older, int newer) {
         for(TsoroYematatuClient listener: listeners) {
             Platform.runLater(() -> {
                 try {
@@ -181,7 +178,7 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
     }
 
     @Override
-    public void choosePlayer(String color) throws Exception {
+    public void choosePlayer(String color) {
         for(TsoroYematatuClient listener: listeners) {
             Platform.runLater(() -> {
                 try {
@@ -194,7 +191,7 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
     }
 
     @Override
-    public void drawGame(String response) throws Exception {
+    public void drawGame(String response) {
         for(TsoroYematatuClient listener: listeners) {
             Platform.runLater(() -> {
                 try {
@@ -222,8 +219,7 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
     public void unregisterClient() throws Exception {
         if (this.server != null) {
             this.server.unregister(this.path);
-            Registry registry = LocateRegistry.getRegistry(0);
-            registry.unbind(this.path);
+            Naming.unbind(this.path);
         }
     }
 
@@ -231,7 +227,4 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
         return path;
     }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
 }

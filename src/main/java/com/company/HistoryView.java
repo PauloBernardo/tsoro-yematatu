@@ -41,6 +41,24 @@ public class HistoryView extends ResizableView {
 
     ResourceBundle bundle = ResourceBundle.getBundle("com.company.i18n", new Locale("pt_br", "pt_BR"));
 
+    private String getResultTranslate(String result) {
+        String message;
+        switch (result) {
+            case "winner":
+                message = bundle.getString("historic.response.winner");
+                break;
+            case "loser":
+                message = bundle.getString("historic.response.loser");
+                break;
+            case "draw":
+                message = bundle.getString("historic.response.draw");
+                break;
+            default:
+                message = result.toUpperCase(Locale.ROOT);
+        }
+        return message;
+    }
+
     @FXML
     private void initClient(){
         try {
@@ -52,7 +70,7 @@ public class HistoryView extends ResizableView {
                 ArrayList<GameDescription> games = server.getHistory(Context.getInstance().getPath());
                 ArrayList<Game> gamesObject = new ArrayList<>();
                 for (GameDescription game: games) {
-                    gamesObject.add(new Game(game.getGame(), game.getResult(), "", ""));
+                    gamesObject.add(new Game(game.getGame(), this.getResultTranslate(game.getResult()), "", ""));
                 }
                 tableGames.setItems(FXCollections.observableArrayList(gamesObject));
             } catch (Exception e) {

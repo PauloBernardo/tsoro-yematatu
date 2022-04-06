@@ -2,9 +2,13 @@ package com.company;
 
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -163,6 +167,16 @@ public class GameView extends ResizableView {
                 }
             });
             loadingLabel.setText("Loading...");
+
+            messageField.setOnKeyPressed(keyEvent -> {
+                try {
+                    if (keyEvent.getCode() == KeyCode.ENTER) {
+                        chatMessageSend();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
         } catch (IOException ex) {
             connectionStatus.setText(bundle.getString("connectedError"));
         }
@@ -283,19 +297,32 @@ public class GameView extends ResizableView {
 
     @FXML
     public void selectColor(MouseEvent event) throws Exception {
-        if (server.chooseColor(Context.getInstance().getPath(), ((Circle)event.getSource()).getId())) {
-            board.getChildren().remove(chooseColorPanel);
-            chooseColorPanel.setLayoutX(-500);
-            chooseColorPanel.setLayoutY(-1000);
-            chooseColorPanel.setOpacity(0);
-            board.getChildren().add(choosePlayer);
-            choosePlayer.setLayoutX(50);
-            choosePlayer.setLayoutY(100);
-            choosePlayer.setOpacity(1);
+        try {
+            if (server.chooseColor(Context.getInstance().getPath(), ((Circle)event.getSource()).getId())) {
+                board.getChildren().remove(chooseColorPanel);
+                chooseColorPanel.setLayoutX(-500);
+                chooseColorPanel.setLayoutY(-1000);
+                chooseColorPanel.setOpacity(0);
+                board.getChildren().add(choosePlayer);
+                choosePlayer.setLayoutX(50);
+                choosePlayer.setLayoutY(100);
+                choosePlayer.setOpacity(1);
 
-            String playerColor = ((Circle)event.getSource()).getId();
-            alterBallsPlayers("yourself", playerColor);
-            loadingLabel.setText("");
+                String playerColor = ((Circle)event.getSource()).getId();
+                alterBallsPlayers("yourself", playerColor);
+                loadingLabel.setText("");
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle(bundle.getString("game.chooseColorErrorTitle"));
+                alert.setContentText(bundle.getString("game.chooseColorErrorText"));
+                alert.show();
+            }
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(bundle.getString("game.chooseColorErrorTitle"));
+            alert.setContentText(bundle.getString("game.chooseColorErrorText"));
+            alert.show();
+            throw e;
         }
     }
 
@@ -478,7 +505,21 @@ public class GameView extends ResizableView {
         messageBox.getChildren().add(new Label("\n"));
 
 
-        if(server.chatMessage(Context.getInstance().getPath(), messageField.getText()).equals(messageField.getText())) messageField.clear();
+        try {
+            if(server.chatMessage(Context.getInstance().getPath(), messageField.getText()).equals(messageField.getText())) {
+                messageField.clear();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle(bundle.getString("game.sendMessageTitleError"));
+                alert.setContentText(bundle.getString("game.sendMessageTextError"));
+                alert.show();
+            }
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(bundle.getString("game.sendMessageTitleError"));
+            alert.setContentText(bundle.getString("game.sendMessageTextError"));
+            alert.show();
+        }
     }
 
     @FXML
@@ -585,7 +626,6 @@ public class GameView extends ResizableView {
         hBox1.setAlignment(Pos.CENTER_RIGHT);
         messageBox.getChildren().add(hBox1);
         messageBox.getChildren().add(new Label("\n"));
-        messageField.clear();
     }
 
 
@@ -595,7 +635,7 @@ public class GameView extends ResizableView {
         if (response.equals("draw")) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle(bundle.getString("game.endGame"));
-            alert.setContentText("Empate!");
+            alert.setContentText(bundle.getString("game.endGame.response.draw"));
             Optional<ButtonType> result = alert.showAndWait();
             if(result.isEmpty() || result.get() == ButtonType.OK) {
                 this.goToMenu();
@@ -680,7 +720,21 @@ public class GameView extends ResizableView {
     public void endGame(String status) throws Exception {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(bundle.getString("game.endGame"));
-        alert.setContentText(status.toUpperCase());
+        String message;
+        switch (status) {
+            case "winner":
+                message = bundle.getString("game.endGame.response.winner");
+                break;
+            case "loser":
+                message = bundle.getString("game.endGame.response.loser");
+                break;
+            case "your opponent left":
+                message = bundle.getString("game.endGame.response.left");
+                break;
+            default:
+                message = status.toUpperCase(Locale.ROOT);
+        }
+        alert.setContentText(message);
         Optional<ButtonType> result = alert.showAndWait();
         if(result.isEmpty() || result.get() == ButtonType.OK) {
             this.goToMenu();
