@@ -2,13 +2,10 @@ package com.company;
 
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -328,7 +325,7 @@ public class GameView extends ResizableView {
 
     @FXML
     public void selectPlayer(MouseEvent event) throws IOException {
-        String playerValue = "";
+        String playerValue;
         if (
             player1Ball.getStyleClass().toString().equals("playerBallsSelected") ||
             player2Ball.getStyleClass().toString().equals("playerBallsSelected")

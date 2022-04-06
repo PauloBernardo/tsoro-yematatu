@@ -39,6 +39,8 @@ public class Context extends UnicastRemoteObject implements TsoroYematatuClient 
                 instance.getServer();
             } catch (Exception e) {
                 e.printStackTrace();
+                instance = null;
+                throw  e;
             }
         }
         return instance;
